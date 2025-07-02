@@ -1,5 +1,10 @@
+// this include
 #include "console.hpp"
 
+// local includes
+#include "constants.hpp"
+
+// std includes
 #include<print>
 
 
@@ -71,7 +76,7 @@ void Console::move_cursor(char x, char y)
 {
 	//printf("\033[%d;%dH", (y), (x));
 	//std::print("\033[{};{}H", ((unsigned int)y), ((unsigned int)x));
-	if (x < 0 || x >= 80 || y < 0 || y >= 40) return;
+	if (x < 0 || x >= MAP_WIDTH || y < 0 || y >= MAP_HEIGHT) return;
 			
 	_cursor_x = x;
 	_cursor_y = y;
@@ -84,5 +89,6 @@ void Console::show_cursor()
 
 void Console::move_hardware_cursor(char x, char y)
 {
-	std::print("\033[{};{}H", ((unsigned int)y), ((unsigned int)x));
+	//std::print("\033[{};{}H", ((unsigned int)y), ((unsigned int)x));
+	std::print("\x1b[{};{}H", ((unsigned int)y + 1), ((unsigned int)x + 1));
 }

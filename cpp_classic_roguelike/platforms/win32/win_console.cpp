@@ -1,12 +1,15 @@
 // this include
 #include "win_console.hpp"
 
-// std
+// local includes
+#include "../../constants.hpp"
+
+// std includes
 #include<optional>
 #include<print>
 #include<stdint.h>
 
-// Platform
+// Platform includes
 #define WIN32_LEAN_AND_MEAN
 
 #include<Windows.h>
@@ -16,8 +19,8 @@
 
 WinConsole::WinConsole() : _back_buffer_index(0)
 {
-	_buffers[0].resize(80 * 40, ' ');
-	_buffers[1].resize(80 * 40, ' ');
+	_buffers[0].resize(MAP_TILE_COUNT, ' ');
+	_buffers[1].resize(MAP_TILE_COUNT, ' ');
 }
 
 std::optional<KeyEvent> WinConsole::read_key()
@@ -37,11 +40,10 @@ std::optional<KeyEvent> WinConsole::read_key()
 				output.key_char_union.unicode_char = key_event_record.uChar.UnicodeChar;
 				return output;
 			}
-			else return std::nullopt;
 		}
 	}
-	else
-		return std::nullopt;
+	
+	return std::nullopt;
 }
 
 void WinConsole::present()
@@ -49,7 +51,7 @@ void WinConsole::present()
 	std::size_t index = 0;
 	for (std::size_t y = 0; y < 40; ++y)
 	{
-		std::print("\033[{};{}H", ((unsigned int)y), ((unsigned int)0));
+		move_hardware_cursor(0, static_cast<char>(y));
 		for (std::size_t x = 0; x < 80; ++x)
 		{
 			char ch = _buffers[_back_buffer_index][index];
@@ -86,5 +88,5 @@ std::size_t WinConsole::_fore_buffer_index()
 
 std::size_t WinConsole::_cursor_tile_index()
 {
-	return (((std::size_t)_cursor_y) * 80) + ((std::size_t)_cursor_x);
+	return (((std::size_t)_cursor_y) * MAP_WIDTH) + ((std::size_t)_cursor_x);
 }
