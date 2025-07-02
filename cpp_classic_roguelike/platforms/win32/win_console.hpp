@@ -11,7 +11,7 @@ public:
 	WinConsole();
 	virtual ~WinConsole() = default;
 
-	virtual std::optional<char> read_key();
+	virtual std::optional<KeyEvent> read_key();
 
 	virtual void present();
 

@@ -1,11 +1,13 @@
 // local headers
 #include "base_map.hpp"
 #include "console.hpp"
+#include "key_event.hpp"
 #include "platform.hpp"
 #include "tile_map.hpp"
 
 // std headers
 #include<memory>
+#include<print>
 #include<ranges>
 
 int main(void)
@@ -43,27 +45,27 @@ int main(void)
 		auto key_maybe = console->read_key();
 		if (key_maybe.has_value())
 		{
-			//std::print("{}", (unsigned int)key_maybe.value());
-			switch (key_maybe.value())
+			//std::print("{}", (unsigned int)key_maybe.value().virtual_scan_code);
+			switch (key_maybe.value().virtual_scan_code)
 			{
-			case 71:
-			case 16: player_x -= 1; player_y -= 1; break;
-			case 72:
-			case 17: player_y -= 1; break;
-			case 73:
-			case 18: player_x += 1; player_y -= 1; break;
-			case 75:
-			case 30: player_x -= 1; break;
-			case 76:
-			case 31: break;
-			case 77:
-			case 32: player_x += 1; break;
-			case 79:
-			case 44: player_x -= 1; player_y += 1; break;
-			case 80:
-			case 45: player_y += 1; break;
-			case 81:
-			case 46: player_x += 1; player_y += 1; break;
+			case VirtualScanCode::Q:
+			case VirtualScanCode::Numpad7: player_x -= 1; player_y -= 1; break;
+			case VirtualScanCode::W:
+			case VirtualScanCode::Numpad8: player_y -= 1; break;
+			case VirtualScanCode::E:
+			case VirtualScanCode::Numpad9: player_x += 1; player_y -= 1; break;
+			case VirtualScanCode::A:
+			case VirtualScanCode::Numpad4: player_x -= 1; break;
+			case VirtualScanCode::S:
+			case VirtualScanCode::Numpad5: break;
+			case VirtualScanCode::D:
+			case VirtualScanCode::Numpad6: player_x += 1; break;
+			case VirtualScanCode::Z:
+			case VirtualScanCode::Numpad1: player_x -= 1; player_y += 1; break;
+			case VirtualScanCode::X:
+			case VirtualScanCode::Numpad2: player_y += 1; break;
+			case VirtualScanCode::C:
+			case VirtualScanCode::Numpad3: player_x += 1; player_y += 1; break;
 			}
 		}
 

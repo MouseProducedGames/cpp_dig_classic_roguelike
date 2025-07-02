@@ -4,6 +4,7 @@
 // std
 #include<optional>
 #include<print>
+#include<stdint.h>
 
 // Platform
 #define WIN32_LEAN_AND_MEAN
@@ -19,7 +20,7 @@ WinConsole::WinConsole() : _back_buffer_index(0)
 	_buffers[1].resize(80 * 40, ' ');
 }
 
-std::optional<char> WinConsole::read_key()
+std::optional<KeyEvent> WinConsole::read_key()
 {
 	HANDLE stdinput = GetStdHandle(STD_INPUT_HANDLE);
 	INPUT_RECORD input;
@@ -29,7 +30,13 @@ std::optional<char> WinConsole::read_key()
 		if (input.EventType == KEY_EVENT) {
 			KEY_EVENT_RECORD key_event_record = *((KEY_EVENT_RECORD*)(&input.Event));
 			if (key_event_record.bKeyDown)
-				return key_event_record.wVirtualScanCode;
+			{
+				KeyEvent output = { 0 };
+				output.virtual_key_code = (VirtualKeyCode)(std::uint8_t)key_event_record.wVirtualKeyCode;
+				output.virtual_scan_code = (VirtualScanCode)(std::uint8_t)key_event_record.wVirtualScanCode;
+				output.key_char_union.unicode_char = key_event_record.uChar.UnicodeChar;
+				return output;
+			}
 			else return std::nullopt;
 		}
 	}

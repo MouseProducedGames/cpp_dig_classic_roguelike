@@ -1,5 +1,9 @@
 #pragma once
 
+// local includes
+#include "key_event.hpp"
+
+// std includes
 #include<optional>
 
 class Console
@@ -14,7 +18,7 @@ public:
 
 	void move_cursor(char x, char y);
 
-	virtual std::optional<char> read_key() = 0;
+	virtual std::optional<KeyEvent> read_key() = 0;
 
 	void show_cursor();
 
