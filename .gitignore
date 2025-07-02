@@ -1,0 +1,10 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/cpp_classic_roguelike
+/cpp_classic_roguelike/x64/Debug
+/x64/Debug
+
+*.vcxproj
+*.vcxproj.*
