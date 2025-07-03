@@ -9,9 +9,11 @@
 #include "tile_map.hpp"
 
 // std headers
+#include<chrono>
 #include<memory>
 #include<print>
 #include<ranges>
+#include<thread>
 
 int main(void)
 {
@@ -69,6 +71,12 @@ int main(void)
 		if (player.get_position().x >= test.width() || player.get_position().y >= test.height())
 		{
 			break;
+		}
+		
+		if (test.get_tile(player.get_position().x, player.get_position().y).value() == '#')
+		{
+			using namespace std::chrono_literals;
+			std::this_thread::sleep_for(250ms);
 		}
 	}
 
