@@ -4,13 +4,13 @@
 #include "glyph.hpp"
 #include "tile_position.hpp"
 
-class Mob
+class MapObject
 {
 public:
 	// de/constructors
-	Mob(Glyph glyph);
-	Mob(Glyph glyph, TilePosition position);
-	virtual ~Mob() = default;
+	MapObject(Glyph glyph);
+	MapObject(Glyph glyph, TilePosition position);
+	virtual ~MapObject() = default;
 
 	// properties
 	const Glyph& get_glyph() const noexcept;

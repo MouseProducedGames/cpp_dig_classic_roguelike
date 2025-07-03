@@ -2,7 +2,7 @@
 // this includes
 #include "mob.hpp"
 
-class Player : public Mob
+class Player : public MapObject
 {
 public:
 	// de/constructors
