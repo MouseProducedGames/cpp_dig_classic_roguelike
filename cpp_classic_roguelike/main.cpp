@@ -15,7 +15,9 @@
 
 int main(void)
 {
-	auto console = make_platform_console();
+	auto console = make_platform_console(MAP_WIDTH, MAP_HEIGHT);
+	//console->set_full_screen(true);
+	//console->hide_cursor();
 
 	Player player('@', TilePosition(0, 20));
 	TileMap test(MAP_WIDTH, MAP_HEIGHT);
@@ -64,7 +66,7 @@ int main(void)
 			player.move(move);
 		}
 
-		if (player.get_position().x > test.width() || player.get_position().y > test.height())
+		if (player.get_position().x >= test.width() || player.get_position().y >= test.height())
 		{
 			break;
 		}

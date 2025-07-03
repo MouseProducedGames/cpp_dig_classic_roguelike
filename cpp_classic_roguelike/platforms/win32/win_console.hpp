@@ -8,12 +8,19 @@
 class WinConsole : public Console
 {
 public:
-	WinConsole();
+	WinConsole(char width, char height);
 	virtual ~WinConsole() = default;
+
+	/*virtual Sizei get_console_size() const;*/
 
 	virtual std::optional<KeyEvent> read_key();
 
 	virtual void present();
+
+	virtual void set_console_height(char height);
+	virtual void set_console_width(char width);
+
+	virtual void set_full_screen(bool on);
 
 	virtual void write(char ch);
 	virtual void write(char ch, char x, char y);

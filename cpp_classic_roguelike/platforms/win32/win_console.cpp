@@ -11,17 +11,30 @@
 
 // Platform includes
 #define WIN32_LEAN_AND_MEAN
+//#define WINVER 0x0500
 
 #include<Windows.h>
 
 #define MAX
 #define MIN
 
-WinConsole::WinConsole() : _back_buffer_index(0)
+WinConsole::WinConsole(char width, char height) : Console()
 {
+	set_console_size(width, height);
+	_back_buffer_index = 0;
 	_buffers[0].resize(MAP_TILE_COUNT, ' ');
 	_buffers[1].resize(MAP_TILE_COUNT, ' ');
 }
+
+//Sizei WinConsole::get_console_size() const
+//{
+//	HANDLE stdoutput = GetStdHandle(STD_OUTPUT_HANDLE);
+//	CONSOLE_SCREEN_BUFFER_INFO buffer_info;
+//	GetConsoleScreenBufferInfo(stdoutput, &buffer_info);
+//	
+//	Sizei output(buffer_info.dwSize.X, buffer_info.dwSize.Y);
+//	return output;
+//}
 
 std::optional<KeyEvent> WinConsole::read_key()
 {
@@ -67,6 +80,82 @@ void WinConsole::present()
 	}
 
 	_back_buffer_index = _fore_buffer_index();
+}
+
+void WinConsole::set_console_height(char height)
+{
+	auto blah = GetSystemMetrics(SM_CYMIN);
+
+	auto stdoutput = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	CONSOLE_SCREEN_BUFFER_INFOEX buffer_info = {};
+	buffer_info.cbSize = sizeof(CONSOLE_SCREEN_BUFFER_INFOEX);
+	GetConsoleScreenBufferInfoEx(stdoutput, &buffer_info);
+	buffer_info.dwSize.Y = (height + 2); // Just slightly...
+	buffer_info.srWindow.Bottom = buffer_info.srWindow.Top + (height + 1);
+	/*SMALL_RECT screen = { 0, 0, 1, 1 };
+	SetConsoleWindowInfo(stdoutput, true, &screen);*/
+	if ((height + 1) > buffer_info.dwMaximumWindowSize.Y)
+		buffer_info.dwMaximumWindowSize.Y = (height + 1);
+	if (!SetConsoleScreenBufferInfoEx(stdoutput, &buffer_info))
+		std::print("    SetConsoleScreenBufferInfoEx error: {}", GetLastError());
+}
+void WinConsole::set_console_width(char width)
+{
+	auto blah = GetSystemMetrics(SM_CXMIN);
+
+	auto stdoutput = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	CONSOLE_SCREEN_BUFFER_INFOEX buffer_info = {};
+	buffer_info.cbSize = sizeof(CONSOLE_SCREEN_BUFFER_INFOEX);
+	GetConsoleScreenBufferInfoEx(stdoutput, &buffer_info);
+	buffer_info.dwSize.X = (width - 0); // ...bugged.
+	buffer_info.srWindow.Right = buffer_info.srWindow.Left + (width - 1);
+	if ((width - 1) > buffer_info.dwMaximumWindowSize.X)
+		buffer_info.dwMaximumWindowSize.X = (width - 1);
+	if (!SetConsoleScreenBufferInfoEx(stdoutput, &buffer_info))
+		std::print("    SetConsoleScreenBufferInfoEx error: {}", GetLastError());
+}
+
+void WinConsole::set_full_screen(bool on)
+{
+	/*if (!SetConsoleDisplayMode(GetStdHandle(STD_OUTPUT_HANDLE), CONSOLE_FULLSCREEN, 0))
+		std::print("    SetConsoleDisplayMode error: {}", GetLastError());*/
+
+	INPUT ip_alt_press = {};
+	ip_alt_press.type = INPUT_KEYBOARD;
+	//ip_alt_press.ki.wScan = 0xA6;
+	//ip_alt_press.ki.wScan = 0;
+	ip_alt_press.ki.wScan = 0x26; // alt key
+	ip_alt_press.ki.time = 0;
+	ip_alt_press.ki.dwExtraInfo = 0;
+	ip_alt_press.ki.wVk = 0xA4; // alt key
+	//ip_alt_press.ki.wVk = 0;
+	ip_alt_press.ki.dwFlags = 0;
+
+	INPUT ip_alt_release = ip_alt_press;
+	ip_alt_release.ki.dwFlags = KEYEVENTF_KEYUP;
+
+	/*if (!SendInput(1, &ip_alt, sizeof(INPUT)))
+		std::print("    SendInputerror: {}", GetLastError());*/
+
+	INPUT ip_enter_press = {};
+	ip_enter_press.type = INPUT_KEYBOARD;
+	//ip_enter_press.ki.wScan = 0;
+	ip_enter_press.ki.wScan = 0x1C;
+	ip_enter_press.ki.time = 200;
+	ip_enter_press.ki.dwExtraInfo = 0;
+	ip_enter_press.ki.wVk = 0xD; // enter key
+	//ip_enter_press.ki.wVk = 0;
+	ip_enter_press.ki.dwFlags = 0;
+	
+	INPUT ip_enter_release = ip_enter_press;
+	ip_enter_release.ki.dwFlags = KEYEVENTF_KEYUP;
+	
+	std::array<INPUT, 4> inputs = { ip_alt_press, ip_enter_press, ip_enter_release, ip_alt_release };
+
+	if (!SendInput(inputs.size(), &inputs[0], sizeof(INPUT)))
+		std::print("    SendInputerror: {}", GetLastError());
 }
 
 void WinConsole::write(char ch)

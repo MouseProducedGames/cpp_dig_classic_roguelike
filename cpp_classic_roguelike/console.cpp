@@ -82,6 +82,12 @@ void Console::move_cursor(char x, char y)
 	_cursor_y = y;
 }
 
+void Console::set_console_size(char width, char height)
+{
+	set_console_height(height);
+	set_console_width(width);
+}
+
 void Console::show_cursor()
 {
 	std::print("\x1b[?25h");
