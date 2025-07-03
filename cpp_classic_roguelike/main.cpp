@@ -31,7 +31,11 @@ int main(void)
 		{
 			for (size_t x = 0; x < test.width(); ++x)
 			{
-				console->write(test.get_tile(x, y).value(), x, y);
+				console->write(
+					test.get_tile(x, y).value(),
+					static_cast<char>(x),
+					static_cast<char>(y)
+				);
 			}
 		}
 		console->write(player.get_glyph(), player.get_position().x, player.get_position().y);
