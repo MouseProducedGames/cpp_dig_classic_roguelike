@@ -1,5 +1,5 @@
 // this include
-#include "mob.hpp"
+#include "map_object.hpp"
 
 // local includes
 #include "constants.hpp"

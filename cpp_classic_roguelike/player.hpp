@@ -1,6 +1,6 @@
 #pragma once
 // this includes
-#include "mob.hpp"
+#include "map_object.hpp"
 
 class Player : public MapObject
 {
