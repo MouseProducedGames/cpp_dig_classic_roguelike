@@ -16,6 +16,7 @@ export module win_console;
 // local imports
 import console;
 import constants;
+import sizei;
 
 // std imports
 import <array>;
@@ -163,6 +164,15 @@ public:
 			std::print("    SendInputerror: {}", GetLastError());
 	}
 
+
+	virtual void write(BaseMap<Glyph>& map)
+	{
+		std::size_t index = 0;
+		for (auto tile_pos : map.iter_tile_positions())
+		{
+			_buffers[_back_buffer_index][index++] = map[tile_pos];
+		}
+	}
 	virtual void write(char ch)
 	{
 		_buffers[_back_buffer_index][_cursor_tile_index()] = ch;

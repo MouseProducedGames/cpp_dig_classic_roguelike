@@ -1,7 +1,9 @@
 export module console;
 
 // local imports
+import base_map;
 import constants;
+import glyph;
 import key_event;
 import sizei;
 import tile_position;
@@ -69,6 +71,7 @@ public:
 		std::print("\x1b[?25h");
 	}
 
+	virtual void write(BaseMap<Glyph>& map) = 0;
 	virtual void write(char ch) = 0;
 	virtual void write(char ch, TilePosition pos) { write(ch, pos.x, pos.y); }
 	virtual void write(char ch, char x, char y) = 0;

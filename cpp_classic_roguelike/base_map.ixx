@@ -5,6 +5,7 @@ import sizei;
 import tile_position;
 
 // std imports
+import <generator>;
 import <optional>;
 import <vector>;
 
@@ -47,6 +48,16 @@ public:
 	}
 	bool is_on_map(std::uint8_t x, std::uint8_t y) const noexcept {
 		return !(x >= _width || y >= _height);
+	}
+
+	std::generator<TilePosition> iter_tile_positions() const noexcept {
+		for (auto y = 0; y < height(); ++y)
+		{
+			for (auto x = 0; x < width(); ++x)
+			{
+				co_yield TilePosition(x, y);
+			}
+		}
 	}
 
 	// operators
