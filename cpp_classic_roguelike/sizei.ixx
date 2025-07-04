@@ -19,7 +19,7 @@ export struct Sizei
 
 	bool operator==(const TilePosition& position) const noexcept
 	{
-		return !(position.x > width || position.y > height);
+		return !(position.x >= width || position.y >= height);
 	}
 	bool operator!=(const TilePosition& position) const noexcept
 	{

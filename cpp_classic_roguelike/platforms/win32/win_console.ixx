@@ -4,7 +4,11 @@
 
 #include<Windows.h>
 
+// Include files (currently) must go above the module export.
+#pragma warning( push )
+#pragma warning( disable : 5201 )
 export module win_console;
+#pragma warning( pop )
 
 #define MAX
 #define MIN
@@ -63,10 +67,10 @@ public:
 	virtual void present()
 	{
 		std::size_t index = 0;
-		for (std::size_t y = 0; y < 40; ++y)
+		for (std::size_t y = 0; y < MAP_HEIGHT; ++y)
 		{
 			move_hardware_cursor(0, static_cast<char>(y));
-			for (std::size_t x = 0; x < 80; ++x)
+			for (std::size_t x = 0; x < MAP_WIDTH; ++x)
 			{
 				char ch = _buffers[_back_buffer_index][index];
 				if (ch != _buffers[_fore_buffer_index()][index])

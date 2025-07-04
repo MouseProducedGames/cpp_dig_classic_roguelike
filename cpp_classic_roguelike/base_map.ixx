@@ -1,12 +1,17 @@
 export module base_map;
 
+// local imports
+import sizei;
+import tile_position;
+
+// std imports
 import <optional>;
 import <vector>;
 
 export template<typename T> class BaseMap {
 public:
 	// constructors
-	BaseMap(std::size_t width, std::size_t height, T value) : _width(width), _height(height)
+	BaseMap(std::uint8_t width, std::uint8_t height, T value) : _width(width), _height(height)
 	{
 		//_tiles.reserve(width * height);
 		_tiles.resize(width * height, value);
@@ -16,38 +21,72 @@ public:
 	virtual ~BaseMap() = default;
 
 	// properties
-	std::size_t height() const noexcept { return _height; }
-	std::size_t width() const noexcept { return _width; }
+	std::uint8_t height() const noexcept { return _height; }
+	Sizei size() const noexcept { return Sizei(width(), height()); }
+	std::uint8_t width() const noexcept { return _width; }
 
 	// methods
-	std::optional<T> get_tile(std::size_t x, std::size_t y) const noexcept
+	std::optional<T> get_tile(TilePosition pos) const noexcept
 	{
-		auto tile_index_maybe = get_tile_index(x, y);
+		return get_tile(pos.x, pos.y);
+	}
+	std::optional<T> get_tile(std::uint8_t x, std::uint8_t y) const noexcept     
+	{
+		auto tile_index_maybe = _get_tile_index(x, y);
 		if (tile_index_maybe.has_value())
 		{
-			std::size_t tile_index = tile_index_maybe.value();
+			auto tile_index = tile_index_maybe.value();
 			return _tiles[tile_index];
 		}
 		else
 			return {};
 	}
 
-	// Visual Studio C++ *does not* support multidimensional subscript operators.
-	/*T const& operator[](std::size_t x, std::size_t y) const
-	{
-		auto tile_index_maybe = get_tile_index(x, y);
-		std::size_t tile_index = tile_index_maybe.value();
-		return _tiles[tile_index];
-	}*/
-
-	bool is_on_map(std::size_t x, std::size_t y) const noexcept {
+	bool is_on_map(TilePosition pos) const noexcept {
+		return is_on_map(pos.x, pos.y);
+	}
+	bool is_on_map(std::uint8_t x, std::uint8_t y) const noexcept {
 		return !(x >= _width || y >= _height);
+	}
+
+	// operators
+	T const& operator[](TilePosition pos) const {
+		auto tile_index_maybe = _get_tile_index(pos.x, pos.y);
+		auto tile_index = tile_index_maybe.value();
+		return _tiles[tile_index];
+	}
+	T const& operator[](std::uint8_t x, std::uint8_t y) const
+	{
+		auto tile_index_maybe = _get_tile_index(x, y);
+		auto tile_index = tile_index_maybe.value();
+		return _tiles[tile_index];
 	}
 
 protected:
 	std::vector<T> _tiles;
 
-	std::optional<std::size_t> get_tile_index(std::size_t x, std::size_t y) const noexcept
+	std::optional<std::size_t> _tile_index(TilePosition pos)
+	{
+		_tile_index(pos.x, pos.y);
+	}
+	std::optional<std::size_t> _tile_index(
+		std::uint8_t x,
+		std::uint8_t y
+	) const noexcept
+	{
+		static_assert(x < width());
+		static_assert(y < height());
+		return (y * width()) + x;
+	}
+
+	std::optional<std::size_t> _get_tile_index(TilePosition pos)
+	{
+		return _get_tile_index(pos.x, pos.y);
+	}
+	std::optional<std::size_t> _get_tile_index(
+		std::uint8_t x,
+		std::uint8_t y
+	) const noexcept
 	{
 		if (is_on_map(x, y))
 			return (y * width()) + x;
@@ -56,6 +95,6 @@ protected:
 	}
 
 private:
-	std::size_t _height;
-	std::size_t _width;
+	std::uint8_t _height;
+	std::uint8_t _width;
 };

@@ -25,13 +25,13 @@ int main(void)
 	//console->set_full_screen(true);
 	//console->hide_cursor();
 
-	Player player('@', TilePosition(0, 20));
+	Player player('@', TilePosition(0, MAP_HEIGHT / 2));
 	TileMap test(MAP_WIDTH, MAP_HEIGHT);
 	while (true)
 	{
-		test.set_tile(player.get_position().x, player.get_position().y, '.');
+		test.set_tile(player.get_position(), '.');
 		draw_glyph_map(console, test);
-		console->write(player.get_glyph(), player.get_position().x, player.get_position().y);
+		console->write(player.get_glyph(), player.get_position());
 
 		console->present();
 
@@ -65,12 +65,12 @@ int main(void)
 			player.move(move);
 		}
 
-		if (player.get_position().x >= test.width() || player.get_position().y >= test.height())
+		if (test.size() != player.get_position())
 		{
 			break;
 		}
 		
-		if (test.get_tile(player.get_position().x, player.get_position().y).value() == '#')
+		if (test[player.get_position()] == '#')
 		{
 			using namespace std::chrono_literals;
 			std::this_thread::sleep_for(250ms);
@@ -83,12 +83,13 @@ int main(void)
 void draw_glyph_map(auto& console, BaseMap<Glyph>& map)
 {
 	//console->clear();
-	for (size_t y = 0; y < map.height(); ++y)
+	for (std::uint8_t y = 0; y < map.height(); ++y)
 	{
-		for (size_t x = 0; x < map.width(); ++x)
+		for (std::uint8_t x = 0; x < map.width(); ++x)
 		{
 			console->write(
-				map.get_tile(x, y).value(),
+				//map.get_tile(x, y).value(),
+				map[x, y],
 				static_cast<char>(x),
 				static_cast<char>(y)
 			);
