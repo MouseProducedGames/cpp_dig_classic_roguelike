@@ -1,9 +1,9 @@
-#pragma once
+export module virtual_scan_code;
 
-// For reference; will use virtual key codes.
+// Reference:
 // <https://stackoverflow.com/questions/12739278/difference-between-virtual-code-and-scan-code>
 
-enum class VirtualScanCode
+export enum class VirtualScanCode
 {
 	Escape = 1,
 	D1 = 2,

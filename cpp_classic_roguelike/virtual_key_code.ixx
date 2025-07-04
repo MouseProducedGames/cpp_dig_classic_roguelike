@@ -1,6 +1,6 @@
-#pragma once
+export module virtual_key_code;
 
-enum class VirtualKeyCode
+export enum class VirtualKeyCode
 {
 	D0 = 48,
 	D1 = 49,

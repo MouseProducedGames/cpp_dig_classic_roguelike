@@ -1,9 +1,9 @@
-#pragma once
+export module base_map;
 
-#include<vector>
-#include<optional>
+import <optional>;
+import <vector>;
 
-template<typename T> class BaseMap {
+export template<typename T> class BaseMap {
 public:
 	// constructors
 	BaseMap(std::size_t width, std::size_t height, T value) : _width(width), _height(height)
@@ -29,7 +29,7 @@ public:
 			return _tiles[tile_index];
 		}
 		else
-			return std::nullopt;
+			return {};
 	}
 
 	// Visual Studio C++ *does not* support multidimensional subscript operators.
@@ -52,7 +52,7 @@ protected:
 		if (is_on_map(x, y))
 			return (y * width()) + x;
 		else
-			return std::nullopt;
+			return {};
 	}
 
 private:

@@ -1,11 +1,11 @@
 #pragma once
 
-// local includes
-#include "key_event.hpp"
-#include "sizei.hpp"
-
-// std includes
+// std imports
 #include<optional>
+
+// local imports
+import key_event;
+import sizei;
 
 class Console
 {

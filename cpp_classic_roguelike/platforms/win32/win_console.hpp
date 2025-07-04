@@ -28,7 +28,7 @@ public:
 protected:
 	std::array<std::vector<char>, 2> _buffers;
 	std::size_t _back_buffer_index;
-	std::size_t _fore_buffer_index();
+	std::size_t _fore_buffer_index() const;
 
 	std::size_t _cursor_tile_index();
 };

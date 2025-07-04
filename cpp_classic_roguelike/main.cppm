@@ -1,12 +1,12 @@
 // local headers
-#include "base_map.hpp"
+import base_map;
 #include "console.hpp"
 #include "constants.hpp"
-#include "key_event.hpp"
-#include "platform.hpp"
-#include "player.hpp"
-#include "tile_displacement.hpp"
-#include "tile_map.hpp"
+import key_event;
+#include "platform.hpp";
+import player;
+import tile_displacement;
+import tile_map;
 
 // std headers
 #include<chrono>
@@ -14,6 +14,7 @@
 #include<print>
 #include<ranges>
 #include<thread>
+//import <thread>
 
 int main(void)
 {

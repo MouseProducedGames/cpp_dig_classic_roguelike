@@ -40,7 +40,7 @@ std::optional<KeyEvent> WinConsole::read_key()
 {
 	HANDLE stdinput = GetStdHandle(STD_INPUT_HANDLE);
 	INPUT_RECORD input;
-	DWORD actually_read;
+	DWORD actually_read = 0;
 	if (ReadConsoleInput(stdinput, &input, (DWORD)1, (LPDWORD)(&actually_read)))
 	{
 		if (input.EventType == KEY_EVENT) {
@@ -154,7 +154,7 @@ void WinConsole::set_full_screen(bool on)
 	
 	std::array<INPUT, 4> inputs = { ip_alt_press, ip_enter_press, ip_enter_release, ip_alt_release };
 
-	if (!SendInput(inputs.size(), &inputs[0], sizeof(INPUT)))
+	if (!SendInput(static_cast<UINT>(inputs.size()), &inputs[0], sizeof(INPUT)))
 		std::print("    SendInputerror: {}", GetLastError());
 }
 
@@ -170,7 +170,7 @@ void WinConsole::write(char ch, char x, char y)
 	write(ch);
 }
 
-std::size_t WinConsole::_fore_buffer_index()
+std::size_t WinConsole::_fore_buffer_index() const
 {
 	return 1 - _back_buffer_index;
 }
