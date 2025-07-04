@@ -16,6 +16,7 @@ export module win_console;
 // local imports
 import console;
 import constants;
+import glyph;
 import sizei;
 
 // std imports
@@ -27,6 +28,8 @@ import <vector>;
 
 // platform imports
 //import windows;
+
+static std::array<Glyph, 2> TILE_GLYPHS = { '#', '.' };
 
 export class WinConsole : public Console
 {
@@ -165,12 +168,14 @@ public:
 	}
 
 
-	virtual void write(BaseMap<Glyph>& map)
+	virtual void write(BaseMap<TileGlyphIndex>& map)
 	{
 		std::size_t index = 0;
 		for (auto tile_pos : map.iter_tile_positions())
 		{
-			_buffers[_back_buffer_index][index++] = map[tile_pos];
+			auto tile_index = static_cast<size_t>(map[tile_pos]);
+			_ASSERT(tile_index <= TILE_GLYPHS.size());
+			_buffers[_back_buffer_index][index++] = TILE_GLYPHS[tile_index];
 		}
 	}
 	virtual void write(char ch)

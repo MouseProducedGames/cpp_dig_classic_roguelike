@@ -27,7 +27,7 @@ int main(void)
 	TileMap test(MAP_WIDTH, MAP_HEIGHT);
 	while (true)
 	{
-		test.set_tile(player.get_position(), '.');
+		test.set_tile(player.get_position(), TileGlyphIndex::Floor);
 		console->write(test);
 		console->write(player.get_glyph(), player.get_position());
 
@@ -68,7 +68,7 @@ int main(void)
 			break;
 		}
 		
-		if (test[player.get_position()] == '#')
+		if (test[player.get_position()] == TileGlyphIndex::Wall)
 		{
 			using namespace std::chrono_literals;
 			std::this_thread::sleep_for(250ms);
