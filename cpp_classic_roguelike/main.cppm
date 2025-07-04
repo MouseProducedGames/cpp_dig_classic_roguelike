@@ -1,19 +1,19 @@
 // local headers
 import base_map;
-#include "console.hpp"
-#include "constants.hpp"
+import console;
+import constants;
 import key_event;
-#include "platform.hpp";
+#include "platform.hpp"
 import player;
 import tile_displacement;
 import tile_map;
 
 // std headers
-#include<chrono>
-#include<memory>
-#include<print>
-#include<ranges>
-#include<thread>
+import <chrono>;
+import <memory>;
+import <print>;
+import <ranges>;
+import <thread>;
 //import <thread>
 
 int main(void)

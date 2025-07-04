@@ -1,10 +1,7 @@
 export module map_object;
 
-// local includes
-#include "constants.hpp"
-
 // local imports
-//#include "tile_position.hpp"
+import constants;
 import glyph;
 import tile_position;
 import tile_displacement;

@@ -1,5 +1,5 @@
-// local includes
-#include "console.hpp"
+// local imports
+import console;
 
 // std includes
 #include<memory>
