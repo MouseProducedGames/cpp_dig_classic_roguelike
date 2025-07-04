@@ -2,6 +2,7 @@
 import base_map;
 import console;
 import constants;
+import glyph;
 import key_event;
 #include "platform.hpp"
 import player;
@@ -16,6 +17,8 @@ import <ranges>;
 import <thread>;
 //import <thread>
 
+void draw_glyph_map(auto& console, BaseMap<Glyph>& map);
+
 int main(void)
 {
 	auto console = make_platform_console(MAP_WIDTH + 1, MAP_HEIGHT + 1);
@@ -27,18 +30,7 @@ int main(void)
 	while (true)
 	{
 		test.set_tile(player.get_position().x, player.get_position().y, '.');
-		//console->clear();
-		for (size_t y = 0; y < test.height(); ++y)
-		{
-			for (size_t x = 0; x < test.width(); ++x)
-			{
-				console->write(
-					test.get_tile(x, y).value(),
-					static_cast<char>(x),
-					static_cast<char>(y)
-				);
-			}
-		}
+		draw_glyph_map(console, test);
 		console->write(player.get_glyph(), player.get_position().x, player.get_position().y);
 
 		console->present();
@@ -86,4 +78,20 @@ int main(void)
 	}
 
 	return 0;
+}
+
+void draw_glyph_map(auto& console, BaseMap<Glyph>& map)
+{
+	//console->clear();
+	for (size_t y = 0; y < map.height(); ++y)
+	{
+		for (size_t x = 0; x < map.width(); ++x)
+		{
+			console->write(
+				map.get_tile(x, y).value(),
+				static_cast<char>(x),
+				static_cast<char>(y)
+			);
+		}
+	}
 }
