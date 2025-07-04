@@ -18,7 +18,7 @@ import <thread>;
 
 int main(void)
 {
-	auto console = make_platform_console(MAP_WIDTH, MAP_HEIGHT);
+	auto console = make_platform_console(MAP_WIDTH + 1, MAP_HEIGHT + 1);
 	//console->set_full_screen(true);
 	//console->hide_cursor();
 
