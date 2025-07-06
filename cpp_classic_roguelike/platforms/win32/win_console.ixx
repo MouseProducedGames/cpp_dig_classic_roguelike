@@ -21,9 +21,11 @@ import sizei;
 
 // std imports
 import <array>;
+import <chrono>;
 import <optional>;
 import <print>;
 import <stdint.h>;
+import <thread>;
 import <vector>;
 
 // platform imports
@@ -165,6 +167,31 @@ public:
 
 		if (!SendInput(static_cast<UINT>(inputs.size()), &inputs[0], sizeof(INPUT)))
 			std::print("    SendInputerror: {}", GetLastError());
+	}
+
+	virtual KeyEvent wait_key()
+	{
+		HANDLE stdinput = GetStdHandle(STD_INPUT_HANDLE);
+		INPUT_RECORD input;
+		DWORD actually_read = 0;
+		while (true)
+		{
+			ReadConsoleInput(stdinput, &input, (DWORD)1, (LPDWORD)(&actually_read));
+			if (input.EventType == KEY_EVENT) {
+				KEY_EVENT_RECORD key_event_record = *((KEY_EVENT_RECORD*)(&input.Event));
+				if (key_event_record.bKeyDown)
+				{
+					KeyEvent output = { 0 };
+					output.virtual_key_code = (VirtualKeyCode)(std::uint8_t)key_event_record.wVirtualKeyCode;
+					output.virtual_scan_code = (VirtualScanCode)(std::uint8_t)key_event_record.wVirtualScanCode;
+					output.key_char_union.unicode_char = key_event_record.uChar.UnicodeChar;
+					return output;
+				}
+			}
+
+			using namespace std::chrono_literals;
+			std::this_thread::sleep_for(1ms);
+		}
 	}
 
 

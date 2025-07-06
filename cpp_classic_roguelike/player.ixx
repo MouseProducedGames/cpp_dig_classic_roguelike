@@ -10,12 +10,13 @@ export class PlayerBrain : public MobBrain
 {
 	void update(Mob& mob)
 	{
-		auto key_maybe = Console::instance().read_key();
-		if (key_maybe.has_value())
+		auto key = Console::instance().wait_key();
+		//if (key_maybe.has_value())
 		{
 			//std::print("{}", (unsigned int)key_maybe.value().virtual_scan_code);
 			TileDisplacement move;
-			switch (key_maybe.value().virtual_scan_code)
+			//auto key = key_maybe.value();
+			switch (key.virtual_scan_code)
 			{
 			case VirtualScanCode::Q:
 			case VirtualScanCode::Numpad7: move.x = -1; move.y = -1; break;

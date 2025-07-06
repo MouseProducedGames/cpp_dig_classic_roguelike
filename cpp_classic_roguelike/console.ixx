@@ -76,6 +76,8 @@ public:
 		std::print("\x1b[?25h");
 	}
 
+	virtual KeyEvent wait_key() = 0;
+
 	virtual void write(BaseMap<TileGlyphIndex>& map) = 0;
 	virtual void write(char ch) = 0;
 	virtual void write(char ch, TilePosition pos) { write(ch, pos.x, pos.y); }
