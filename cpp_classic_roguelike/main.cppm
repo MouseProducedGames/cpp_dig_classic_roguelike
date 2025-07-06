@@ -4,9 +4,11 @@ import console;
 import constants;
 import glyph;
 import key_event;
+import mob;
 #include "platform.hpp"
 import player;
 import tile_displacement;
+import tile_position;
 import tile_map;
 
 // std imports
@@ -22,7 +24,11 @@ int main(void)
 	//console->set_full_screen(true);
 	//console->hide_cursor();
 
-	Player player('@', TilePosition(0, MAP_HEIGHT / 2));
+	Mob player(
+		'@',
+		TilePosition(0, MAP_HEIGHT / 2),
+		std::unique_ptr<MobBrain>(new PlayerBrain())
+	);
 	TileMap test(MAP_WIDTH, MAP_HEIGHT);
 	while (true)
 	{
@@ -32,35 +38,7 @@ int main(void)
 
 		Console::instance().present();
 
-		auto key_maybe = Console::instance().read_key();
-		if (key_maybe.has_value())
-		{
-			//std::print("{}", (unsigned int)key_maybe.value().virtual_scan_code);
-			TileDisplacement move;
-			switch (key_maybe.value().virtual_scan_code)
-			{
-			case VirtualScanCode::Q:
-			case VirtualScanCode::Numpad7: move.x = -1; move.y = -1; break;
-			case VirtualScanCode::W:
-			case VirtualScanCode::Numpad8: move.y = -1; break;
-			case VirtualScanCode::E:
-			case VirtualScanCode::Numpad9: move.x = 1; move.y = -1; break;
-			case VirtualScanCode::A:
-			case VirtualScanCode::Numpad4: move.x = -1; break;
-			case VirtualScanCode::S:
-			case VirtualScanCode::Numpad5: break;
-			case VirtualScanCode::D:
-			case VirtualScanCode::Numpad6: move.x = 1; break;
-			case VirtualScanCode::Z:
-			case VirtualScanCode::Numpad1: move.x = -1; move.y = 1; break;
-			case VirtualScanCode::X:
-			case VirtualScanCode::Numpad2: move.y = 1; break;
-			case VirtualScanCode::C:
-			case VirtualScanCode::Numpad3: move.x = 1; move.y = 1; break;
-			}
-
-			player.move(move);
-		}
+		player.update();
 
 		if (test.size() != player.get_position())
 		{
