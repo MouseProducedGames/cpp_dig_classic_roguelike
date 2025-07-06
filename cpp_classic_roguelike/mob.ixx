@@ -16,6 +16,8 @@ public:
 	MobBrain() = default;
 	virtual ~MobBrain() = default;
 
+	virtual void kill(Mob& mob) {}
+
 	virtual void update(Mob& mob) = 0;
 };
 
@@ -32,6 +34,15 @@ public:
 	) : MapObject(glyph, position), _brain(std::move(brain)) {}
 	virtual ~Mob() = default;
 
+	bool is_alive() const noexcept { return !is_dead(); }
+	bool is_dead() const noexcept { return _is_dead; }
+
+	void kill()
+	{
+		_is_dead = true;
+		_brain->kill(*this);
+	}
+
 	void update()
 	{
 		_brain->update(*this);
@@ -39,4 +50,5 @@ public:
 
 private:
 	std::unique_ptr<MobBrain> _brain;
+	bool _is_dead = false;
 };

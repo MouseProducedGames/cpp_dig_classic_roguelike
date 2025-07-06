@@ -17,6 +17,7 @@ import <memory>;
 import <print>;
 import <ranges>;
 import <thread>;
+import <vector>;
 
 int main(void)
 {
@@ -24,28 +25,55 @@ int main(void)
 	//console->set_full_screen(true);
 	//console->hide_cursor();
 
-	Mob player(
+	std::vector<std::shared_ptr<Mob>> mobs;
+
+	mobs.push_back(std::make_shared<Mob>(
 		'@',
 		TilePosition(0, MAP_HEIGHT / 2),
 		std::unique_ptr<MobBrain>(new PlayerBrain())
-	);
+	));
+
+	std::shared_ptr<Mob> player = mobs[0];
+	std::vector<size_t> removes;
 	TileMap test(MAP_WIDTH, MAP_HEIGHT);
 	while (true)
 	{
-		test.set_tile(player.get_position(), TileGlyphIndex::Floor);
+		test.set_tile(player->get_position(), TileGlyphIndex::Floor);
 		Console::instance().write(test);
-		Console::instance().write(player.get_glyph(), player.get_position());
+		for (auto& mob : mobs)
+		{
+			Console::instance().write(mob->get_glyph(), mob->get_position());
+		}
 
 		Console::instance().present();
 
-		player.update();
+		
+		for (auto [index, mob] : std::views::enumerate(mobs))
+		{
+			mob->update();
 
-		if (test.size() != player.get_position())
+			if (test.size() != mob->get_position())
+			{
+				mob->kill();
+				removes.push_back(index);
+			}
+		}
+
+		if (player->is_dead())
 		{
 			break;
 		}
+
+		for (auto index : std::views::reverse(removes))
+		{
+			auto last = mobs[mobs.size() - 1];
+			mobs[mobs.size() - 1] = mobs[index];
+			mobs[index] = last;
+			mobs.pop_back();
+		}
+		removes.clear();
 		
-		if (test[player.get_position()] == TileGlyphIndex::Wall)
+		if (test[player->get_position()] == TileGlyphIndex::Wall)
 		{
 			using namespace std::chrono_literals;
 			std::this_thread::sleep_for(250ms);
