@@ -40,6 +40,11 @@ public:
 		std::print("\x1b[?25l");
 	}
 
+	static Console& instance()
+	{
+		return *_INSTANCE;
+	}
+
 	void move_cursor(TilePosition pos) { move_cursor(pos.x, pos.y); }
 	void move_cursor(char x, char y)
 	{
@@ -88,4 +93,11 @@ protected:
 			((unsigned int)x + 1)
 		);
 	}
+
+private:
+	static std::shared_ptr<Console> _INSTANCE;
+
+	friend void make_platform_console(char width, char height);
 };
+
+std::shared_ptr<Console> Console::_INSTANCE;

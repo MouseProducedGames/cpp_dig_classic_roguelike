@@ -1,4 +1,4 @@
-// local headers
+// local imports
 import base_map;
 import console;
 import constants;
@@ -9,17 +9,16 @@ import player;
 import tile_displacement;
 import tile_map;
 
-// std headers
+// std imports
 import <chrono>;
 import <memory>;
 import <print>;
 import <ranges>;
 import <thread>;
-//import <thread>
 
 int main(void)
 {
-	auto console = make_platform_console(MAP_WIDTH + 1, MAP_HEIGHT + 1);
+	make_platform_console(MAP_WIDTH + 1, MAP_HEIGHT + 1);
 	//console->set_full_screen(true);
 	//console->hide_cursor();
 
@@ -28,12 +27,12 @@ int main(void)
 	while (true)
 	{
 		test.set_tile(player.get_position(), TileGlyphIndex::Floor);
-		console->write(test);
-		console->write(player.get_glyph(), player.get_position());
+		Console::instance().write(test);
+		Console::instance().write(player.get_glyph(), player.get_position());
 
-		console->present();
+		Console::instance().present();
 
-		auto key_maybe = console->read_key();
+		auto key_maybe = Console::instance().read_key();
 		if (key_maybe.has_value())
 		{
 			//std::print("{}", (unsigned int)key_maybe.value().virtual_scan_code);
