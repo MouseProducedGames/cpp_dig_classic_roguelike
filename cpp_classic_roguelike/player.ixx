@@ -8,7 +8,7 @@ import virtual_scan_code;
 
 export class PlayerBrain : public MobBrain
 {
-	void update(Mob& mob)
+	void update(Mob& mob, TileMap& map)
 	{
 		auto key = Console::instance().wait_key();
 		//if (key_maybe.has_value())

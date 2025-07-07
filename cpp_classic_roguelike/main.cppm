@@ -14,6 +14,7 @@ import tile_map;
 
 // std imports
 import <chrono>;
+import <limits>;
 import <memory>;
 import <print>;
 import <random>;
@@ -65,13 +66,51 @@ int main(void)
 		Console::instance().present();
 
 		
+		{
+			for (auto& mob : mobs)
+			{
+				auto cur_time = mob->get_next_action_time() - 1.0;
+				mob->set_next_action_time(cur_time);
+			}
+
+			// Zero-centering initiative time to avoid drift.
+			double smallest_time = std::numeric_limits<double>::max();
+			for (auto& mob : mobs)
+			{
+				auto cur_time = mob->get_next_action_time();
+				if (cur_time < smallest_time)
+				{
+					smallest_time = cur_time;
+				}
+			}
+
+			for (auto& mob : mobs)
+			{
+				auto cur_time = mob->get_next_action_time();
+				mob->set_next_action_time(cur_time - smallest_time);
+			}
+		}
+
+		std::sort(
+			mobs.begin(),
+			mobs.end(),
+			[](auto& lhs, auto& rhs)
+			{
+				return lhs->get_next_action_time() < rhs->get_next_action_time();
+			}
+		);
+
 		for (auto& mob : mobs)
 		{
+			if (mob->get_next_action_time() > 1.0) break;
+
 			test.set_tile(mob->get_position(), TileGlyphIndex::Floor);
-			
+
 			if (mob->is_dead()) continue;
 
-			mob->update();
+			mob->update(test);
+
+			if (mob->is_dead()) continue;
 
 			for (auto& other_mob : mobs)
 			{
@@ -81,11 +120,6 @@ int main(void)
 				{
 					other_mob->kill();
 				}
-			}
-
-			if (test.size() != mob->get_position())
-			{
-				mob->kill();
 			}
 		}
 
@@ -111,11 +145,11 @@ int main(void)
 		}
 		removes.clear();
 		
-		if (test[player->get_position()] == TileGlyphIndex::Wall)
+		/*if (test[player->get_position()] == TileGlyphIndex::Wall)
 		{
 			using namespace std::chrono_literals;
 			std::this_thread::sleep_for(250ms);
-		}
+		}*/
 	}
 
 	return 0;

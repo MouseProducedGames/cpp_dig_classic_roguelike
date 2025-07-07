@@ -16,7 +16,7 @@ public:
 	}
 	~RandomMoveBrain() = default;
 
-	void update(Mob& mob)
+	void update(Mob& mob, TileMap& map)
 	{
 		int choice = std::uniform_int_distribution<int>(1, 9)(e1);
 		TileDisplacement move;
