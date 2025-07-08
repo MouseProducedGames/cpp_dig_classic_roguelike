@@ -7,7 +7,9 @@ import tile_map;
 import tile_position;
 
 // std imports
+import <chrono>;
 import <memory>;
+import <random>;
 
 class Mob;
 
@@ -27,12 +29,22 @@ export class Mob : public MapObject
 public:
 	// de/constructors
 	Mob(Glyph glyph, std::unique_ptr<MobBrain> brain)
-		: MapObject(glyph), _brain(std::move(brain)) {}
+		: MapObject(glyph), _brain(std::move(brain))
+	{
+		_default_random_engine =
+			std::move(std::default_random_engine(_random_device()));
+		_default_random_engine.seed(_rand_seed_counter++);
+	}
 	Mob(
 		Glyph glyph,
 		TilePosition position,
 		std::unique_ptr<MobBrain> brain
-	) : MapObject(glyph, position), _brain(std::move(brain)) {}
+	) : MapObject(glyph, position), _brain(std::move(brain))
+	{
+		_default_random_engine =
+			std::move(std::default_random_engine(_random_device()));
+		_default_random_engine.seed(_rand_seed_counter++);
+	}
 	virtual ~Mob() = default;
 
 	double get_next_action_time() const noexcept { return _next_action_time; }
@@ -49,6 +61,24 @@ public:
 	{
 		_is_dead = true;
 		_brain->kill(*this);
+	}
+
+	std::default_random_engine& get_default_random_engine() noexcept
+	{
+		return _default_random_engine;
+	}
+	std::default_random_engine const& get_default_random_engine() const noexcept
+	{
+		return _default_random_engine;
+	}
+
+	std::random_device& get_random_device() noexcept
+	{
+		return _random_device;
+	}
+	std::random_device const& get_random_device() const noexcept
+	{
+		return _random_device;
 	}
 
 	void update(TileMap& map)
@@ -70,6 +100,12 @@ public:
 
 private:
 	std::unique_ptr<MobBrain> _brain;
-	bool _is_dead = false;
 	double _next_action_time = 1.0;
+	static uint64_t _rand_seed_counter;
+	std::default_random_engine _default_random_engine;
+	static std::random_device _random_device;
+	bool _is_dead = false;
 };
+
+std::random_device Mob::_random_device;
+uint64_t Mob::_rand_seed_counter = 0;

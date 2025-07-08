@@ -12,15 +12,15 @@ export class RandomMoveBrain : public MobBrain
 public:
 	RandomMoveBrain()
 	{
-		e1 = std::move(std::default_random_engine(r()));
+		_choice = std::uniform_int_distribution<int>(1, 9);
 	}
 	~RandomMoveBrain() = default;
 
 	void update(Mob& mob, TileMap& map)
 	{
-		int choice = std::uniform_int_distribution<int>(1, 9)(e1);
+		int choice_roll = _choice(mob.get_default_random_engine());
 		TileDisplacement move;
-		switch (choice)
+		switch (choice_roll)
 		{
 		case 1: move.x = -1; move.y = -1; break;
 		case 2: move.y = -1; break;
@@ -37,6 +37,5 @@ public:
 	}
 
 private:
-	std::random_device r;
-	std::default_random_engine e1;
+	std::uniform_int_distribution<int> _choice;
 };
