@@ -102,7 +102,7 @@ int main(void)
 
 		for (auto& mob : mobs)
 		{
-			if (mob->get_next_action_time() > 1.0) break;
+			if (mob->get_next_action_time() > 0.0001) break;
 
 			test.set_tile(mob->get_position(), TileGlyphIndex::Floor);
 
