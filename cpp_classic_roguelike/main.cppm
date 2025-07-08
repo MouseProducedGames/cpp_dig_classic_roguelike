@@ -22,6 +22,14 @@ import <ranges>;
 import <thread>;
 import <vector>;
 
+// No, I don't know why it has to be done like this.
+struct {
+	bool operator()(auto& lhs, auto& rhs)
+	{
+		return lhs->get_next_action_time() < rhs->get_next_action_time();
+	}
+} SortByNextActionTime;
+
 int main(void)
 {
 	std::random_device r;
@@ -87,9 +95,7 @@ int main(void)
 			if (smallest_time > 0.0)
 			{
 				using namespace std::chrono_literals;
-				std::this_thread::sleep_for(
-					50ms * smallest_time
-				);
+				std::this_thread::sleep_for(50ms * smallest_time);
 			}
 
 			for (auto& mob : mobs)
@@ -99,14 +105,7 @@ int main(void)
 			}
 		}
 
-		std::sort(
-			mobs.begin(),
-			mobs.end(),
-			[](auto& lhs, auto& rhs)
-			{
-				return lhs->get_next_action_time() < rhs->get_next_action_time();
-			}
-		);
+		std::sort(mobs.begin(), mobs.end(), SortByNextActionTime);
 
 		for (auto& mob : mobs)
 		{
