@@ -67,11 +67,11 @@ int main(void)
 
 		
 		{
-			for (auto& mob : mobs)
+			/*for (auto& mob : mobs)
 			{
 				auto cur_time = mob->get_next_action_time() - 1.0;
 				mob->set_next_action_time(cur_time);
-			}
+			}*/
 
 			// Zero-centering initiative time to avoid drift.
 			double smallest_time = std::numeric_limits<double>::max();
@@ -82,6 +82,14 @@ int main(void)
 				{
 					smallest_time = cur_time;
 				}
+			}
+
+			if (smallest_time > 0.0)
+			{
+				using namespace std::chrono_literals;
+				std::this_thread::sleep_for(
+					50ms * smallest_time
+				);
 			}
 
 			for (auto& mob : mobs)
