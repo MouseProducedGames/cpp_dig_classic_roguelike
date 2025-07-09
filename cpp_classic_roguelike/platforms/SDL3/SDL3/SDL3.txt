@@ -1,0 +1,5 @@
+SDL3-3.2.16
+
+include\SDL3
+libs\win32
+libs\x64
