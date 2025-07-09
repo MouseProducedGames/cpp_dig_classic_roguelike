@@ -3,8 +3,8 @@
 ################################################################################
 
 /.vs/cpp_classic_roguelike
-/cpp_classic_roguelike/x64/Debug
-/x64/Debug
+/cpp_classic_roguelike/x64
+/x64
 cpp_classic_roguelike/platforms/SDL3/SDL3/include
 cpp_classic_roguelike/platforms/SDL3/SDL3/libs
 

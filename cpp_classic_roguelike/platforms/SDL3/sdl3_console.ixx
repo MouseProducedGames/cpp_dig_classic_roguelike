@@ -117,7 +117,6 @@ public:
 		std::size_t index = 0;
 		for (std::size_t y = 0; y < MAP_HEIGHT; ++y)
 		{
-			move_hardware_cursor(0, static_cast<char>(y));
 			for (std::size_t x = 0; x < MAP_WIDTH; ++x)
 			{
 				_buffers[_fore_buffer_index()][index] = ' ';
@@ -161,7 +160,6 @@ public:
 		std::array<char, 2> chars = { ' ', '\0' };
 		for (std::size_t y = 0; y < MAP_HEIGHT; ++y)
 		{
-			move_hardware_cursor(0, static_cast<char>(y));
 			for (std::size_t x = 0; x < MAP_WIDTH; ++x)
 			{
 				char ch = _buffers[_back_buffer_index][index];

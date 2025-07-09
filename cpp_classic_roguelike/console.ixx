@@ -19,27 +19,35 @@ export class Console
 public:
 	Console()
 	{
+#ifdef _CONSOLE
 		std::print("\x1b[?1049h");
+#endif
 		hide_cursor();
 		clear();
 		move_cursor(0, 0);
 	}
 	virtual ~Console()
 	{
+#ifdef _CONSOLE
 		std::print("\x1b[?1049l");
+#endif
 		show_cursor();
 	}
 
 	virtual void clear()
 	{
-		std::print("\x1b[2J");
+//#ifdef _CONSOLE
+//		std::print("\x1b[2J");
+//#endif
 	}
 
 	/*virtual Sizei get_console_size() const = 0;*/
 
 	virtual void hide_cursor()
 	{
+#ifdef _CONSOLE
 		std::print("\x1b[?25l");
+#endif
 	}
 
 	static Console& instance()
@@ -75,7 +83,9 @@ public:
 
 	virtual void show_cursor()
 	{
+#ifdef _CONSOLE
 		std::print("\x1b[?25h");
+#endif
 	}
 
 	virtual KeyEvent wait_key()
@@ -103,12 +113,14 @@ protected:
 
 	void move_hardware_cursor(char x, char y)
 	{
+#ifdef _CONSOLE
 		//std::print("\033[{};{}H", ((unsigned int)y), ((unsigned int)x));
 		std::print(
 			"\x1b[{};{}H",
 			((unsigned int)y + 1),
 			((unsigned int)x + 1)
 		);
+#endif
 	}
 
 private:
