@@ -146,7 +146,7 @@ int main(void)
 
 		for (auto index : std::views::reverse(removes))
 		{
-			auto last = mobs[mobs.size() - 1];
+			std::shared_ptr<Mob> last = mobs[mobs.size() - 1];
 			mobs[mobs.size() - 1] = mobs[index];
 			mobs[index] = last;
 			mobs.pop_back();

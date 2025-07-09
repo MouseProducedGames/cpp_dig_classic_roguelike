@@ -1,6 +1,9 @@
 #include "platform.hpp"
 
+#pragma warning( push )
+#pragma warning( disable : 5201 ) // Until they fix mixing includes and imports.
 export module console;
+#pragma warning( pop )
 
 // local imports
 import base_map;
