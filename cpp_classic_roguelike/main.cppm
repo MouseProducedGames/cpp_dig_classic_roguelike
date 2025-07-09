@@ -36,7 +36,7 @@ int main(void)
 	std::default_random_engine e1(r());
 	auto rand_x_pos = std::uniform_int_distribution<int>(0, (MAP_WIDTH - 1));
 	auto rand_y_pos = std::uniform_int_distribution<int>(0, (MAP_HEIGHT - 1));
-	make_platform_console(MAP_WIDTH + 1, MAP_HEIGHT + 1);
+	make_platform_console(MAP_WIDTH + 1, MAP_HEIGHT + 1, DEFAULT_PLATFORM);
 	//console->set_full_screen(true);
 	//console->hide_cursor();
 
