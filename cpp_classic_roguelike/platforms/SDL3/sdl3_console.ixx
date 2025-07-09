@@ -109,6 +109,18 @@ public:
 		SDL_SetRenderScale(_renderer, 1.0, 1.0);
 		SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
 		SDL_RenderClear(_renderer);
+
+		std::size_t index = 0;
+		for (std::size_t y = 0; y < MAP_HEIGHT; ++y)
+		{
+			move_hardware_cursor(0, static_cast<char>(y));
+			for (std::size_t x = 0; x < MAP_WIDTH; ++x)
+			{
+				_buffers[_fore_buffer_index()][index] = ' ';
+
+				index += 1;
+			}
+		}
 	}
 
 	/*virtual Sizei get_console_size() const;*/
@@ -149,7 +161,7 @@ public:
 			for (std::size_t x = 0; x < MAP_WIDTH; ++x)
 			{
 				char ch = _buffers[_back_buffer_index][index];
-				//if (ch != _buffers[_fore_buffer_index()][index])
+				if (ch != _buffers[_fore_buffer_index()][index])
 				{
 					_buffers[_fore_buffer_index()][index] = ch;
 					chars[0] = ch;
