@@ -26,6 +26,8 @@ import <vector>;
 
 static std::array<Glyph, 2> TILE_GLYPHS = { '#', '.' };
 
+static float _text_scale = 8.0f;
+
 export class SDL3Console : public Console
 {
 public:
@@ -77,9 +79,11 @@ public:
 		SDL_GetDesktopDisplayMode(1);
 		if (display_mode)
 		{
+			float fwts = static_cast<float>(width) * _text_scale;
+			float fhts = static_cast<float>(height) * _text_scale;
 			_scale = static_cast<float>(std::min(
-				static_cast<float>(display_mode->w) / static_cast<float>(width) / 10.0,
-				static_cast<float>(display_mode->h) / static_cast<float>(height) / 10.0
+				static_cast<float>(display_mode->w) / fwts,
+				static_cast<float>(display_mode->h) / fhts
 			));
 		}
 		else {
@@ -141,7 +145,7 @@ public:
 					key_event_record.scancode,
 					key_event_record.mod,
 					true
-					);
+				);
 				return output;
 			}
 		}
@@ -167,8 +171,8 @@ public:
 					chars[0] = ch;
 					SDL_RenderDebugText(
 						_renderer,
-						static_cast<float>(x) * 10.0f,
-						static_cast<float>(y) * 10.0f,
+						static_cast<float>(x) * _text_scale,
+						static_cast<float>(y) * _text_scale,
 						&chars[0]
 					);
 				}
@@ -187,57 +191,20 @@ public:
 	{
 		int w = 0, h = 0;
 		SDL_GetWindowSize(_window, &w, &h);
-		h = static_cast<int>(height) * 10 * _scale;
+		h = static_cast<int>(static_cast<float>(height) * _text_scale * _scale);
 		SDL_SetWindowSize(_window, w, h);
 	}
 	virtual void set_console_width(char width)
 	{
 		int w = 0, h = 0;
 		SDL_GetWindowSize(_window, &w, &h);
-		w = static_cast<int>(width) * 10 * _scale;
+		w = static_cast<int>(static_cast<float>(width) * _text_scale * _scale);
 		SDL_SetWindowSize(_window, w, h);
 	}
 
 	virtual void set_full_screen(bool on)
 	{
 		SDL_SetWindowFullscreen(_window, on);
-		/*if (!SetConsoleDisplayMode(GetStdHandle(STD_OUTPUT_HANDLE), CONSOLE_FULLSCREEN, 0))
-			std::print("    SetConsoleDisplayMode error: {}", GetLastError());*/
-
-		//INPUT ip_alt_press = {};
-		//ip_alt_press.type = INPUT_KEYBOARD;
-		////ip_alt_press.ki.wScan = 0xA6;
-		////ip_alt_press.ki.wScan = 0;
-		//ip_alt_press.ki.wScan = 0x26; // alt key
-		//ip_alt_press.ki.time = 0;
-		//ip_alt_press.ki.dwExtraInfo = 0;
-		//ip_alt_press.ki.wVk = 0xA4; // alt key
-		////ip_alt_press.ki.wVk = 0;
-		//ip_alt_press.ki.dwFlags = 0;
-
-		//INPUT ip_alt_release = ip_alt_press;
-		//ip_alt_release.ki.dwFlags = KEYEVENTF_KEYUP;
-
-		///*if (!SendInput(1, &ip_alt, sizeof(INPUT)))
-		//	std::print("    SendInputerror: {}", GetLastError());*/
-
-		//INPUT ip_enter_press = {};
-		//ip_enter_press.type = INPUT_KEYBOARD;
-		////ip_enter_press.ki.wScan = 0;
-		//ip_enter_press.ki.wScan = 0x1C;
-		//ip_enter_press.ki.time = 200;
-		//ip_enter_press.ki.dwExtraInfo = 0;
-		//ip_enter_press.ki.wVk = 0xD; // enter key
-		////ip_enter_press.ki.wVk = 0;
-		//ip_enter_press.ki.dwFlags = 0;
-
-		//INPUT ip_enter_release = ip_enter_press;
-		//ip_enter_release.ki.dwFlags = KEYEVENTF_KEYUP;
-
-		//std::array<INPUT, 4> inputs = { ip_alt_press, ip_enter_press, ip_enter_release, ip_alt_release };
-
-		//if (!SendInput(static_cast<UINT>(inputs.size()), &inputs[0], sizeof(INPUT)))
-		//	std::print("    SendInputerror: {}", GetLastError());
 	}
 
 
@@ -254,7 +221,6 @@ public:
 	virtual void write(char ch)
 	{
 		_buffers[_back_buffer_index][_cursor_tile_index()] = ch;
-		//_buffers[_fore_buffer_index()][_cursor_tile_index()] = ch;
 	}
 	virtual void write(char ch, char x, char y)
 	{
