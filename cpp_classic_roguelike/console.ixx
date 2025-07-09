@@ -110,8 +110,30 @@ public:
 
 	virtual void write(BaseMap<TileGlyphIndex>& map) = 0;
 	virtual void write(char ch) = 0;
+	virtual void write(std::string s)
+	{
+		write(s, _cursor_x, _cursor_y);
+	}
 	virtual void write(char ch, TilePosition pos) { write(ch, pos.x, pos.y); }
 	virtual void write(char ch, char x, char y) = 0;
+	virtual void write(std::string s, TilePosition pos)
+	{
+		write(std::move(s), pos.x, pos.y);
+	}
+	virtual void write(std::string s, char x, char y) = 0;
+	virtual void write_line()
+	{
+		move_cursor(_cursor_x, _cursor_y + 1);
+	}
+	virtual void write_line(std::string s)
+	{
+		write_line(s, _cursor_x, _cursor_y);
+	}
+	virtual void write_line(std::string s, TilePosition pos)
+	{
+		write(std::move(s), pos.x, pos.y);
+	}
+	virtual void write_line(std::string s, char x, char y) = 0;
 
 protected:
 	char _cursor_x = 0, _cursor_y = 0;

@@ -15,10 +15,13 @@ import sizei;
 // std imports
 import <algorithm>;
 import <array>;
+import <chrono>;
 import <exception>;
+import <iostream>;
 import <optional>;
 import <print>;
 import <stdint.h>;
+import <thread>;
 import <vector>;
 
 // platform imports
@@ -26,13 +29,16 @@ import <vector>;
 
 static std::array<Glyph, 2> TILE_GLYPHS = { '#', '.' };
 
-static float _text_scale = 8.0f;
+static const float _text_scale = 8.0f;
 
 export class SDL3Console : public Console
 {
 public:
 	SDL3Console(char width, char height) : Console()
 	{
+		//using namespace std::chrono_literals;
+		//std::this_thread::sleep_for(1s);
+
 		_back_buffer_index = 0;
 		_buffers[0].resize(MAP_TILE_COUNT, ' ');
 		_buffers[1].resize(MAP_TILE_COUNT, ' ');
@@ -75,8 +81,8 @@ public:
 		}
 
 		SDL_DisplayMode const* display_mode =
-		//SDL_GetCurrentDisplayMode(0, &display_mode);
-		SDL_GetDesktopDisplayMode(1);
+		SDL_GetCurrentDisplayMode(1);
+		//SDL_GetDesktopDisplayMode(1);
 		if (display_mode)
 		{
 			float fwts = static_cast<float>(width) * _text_scale;
@@ -87,7 +93,9 @@ public:
 			));
 		}
 		else {
-			std::println("SDL_GetError(): {}", SDL_GetError());
+			//std::println("SDL_GetError(): {}", SDL_GetError());
+			char const* temp = SDL_GetError();
+			std::cerr << temp;
 			_scale = 1.0;
 		}
 		set_console_size(width, height);
@@ -95,6 +103,10 @@ public:
 	}
 	virtual ~SDL3Console()
 	{
+		//using namespace std::chrono_literals;
+
+		//SDL_SetWindowFullscreen(_window, false);
+		//std::this_thread::sleep_for(1s);
 		if (_renderer)
 		{
 			SDL_DestroyRenderer(_renderer);
@@ -106,6 +118,7 @@ public:
 			_window = nullptr;;
 		}
 		SDL_Quit();
+		//std::this_thread::sleep_for(1s);
 	}
 
 	virtual void clear()
@@ -224,6 +237,41 @@ public:
 	{
 		move_cursor(x, y);
 		write(ch);
+	}
+	virtual void write(std::string s, char x, char y)
+	{
+		move_cursor(x, y);
+		const std::size_t start_index = _cursor_tile_index();
+		std::size_t index = start_index;
+		while (index < MAP_TILE_COUNT && (index - start_index) < s.length())
+		{
+			_buffers[_back_buffer_index][index] = s[index - start_index];
+			index += 1;
+		}
+		if (index < MAP_TILE_COUNT)
+		{
+			x = static_cast<char>(index % static_cast<std::size_t>(MAP_WIDTH));
+			y = static_cast<char>(index / static_cast<std::size_t>(MAP_WIDTH));
+			move_cursor(x, y);
+		}
+	}
+	virtual void write_line(std::string s, char x, char y)
+	{
+		move_cursor(x, y);
+		const std::size_t start_index = _cursor_tile_index();
+		std::size_t index = start_index;
+		while (index < MAP_TILE_COUNT && (index - start_index) < s.length())
+		{
+			_buffers[_back_buffer_index][index] = s[index - start_index];
+			index += 1;
+		}
+		if (index < MAP_TILE_COUNT)
+		{
+			index += MAP_WIDTH;
+			x = x;
+			y = static_cast<char>(index / static_cast<std::size_t>(MAP_WIDTH));
+			move_cursor(x, y);
+		}
 	}
 
 protected:

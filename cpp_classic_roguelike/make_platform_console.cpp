@@ -14,6 +14,11 @@ import win_console;
 
 void make_platform_console(char width, char height, Platform platform)
 {
+	if (Console::_INSTANCE)
+	{
+		Console::_INSTANCE.reset();
+	}
+
 	switch (platform)
 	{
 #ifdef _CONSOLE

@@ -215,6 +215,41 @@ public:
 		move_cursor(x, y);
 		write(ch);
 	}
+	virtual void write(std::string s, char x, char y)
+	{
+		move_cursor(x, y);
+		const std::size_t start_index = _cursor_tile_index();
+		std::size_t index = start_index;
+		while (index < MAP_TILE_COUNT && (index - start_index) < s.length())
+		{
+			_buffers[_back_buffer_index][index] = s[index - start_index];
+			index += 1;
+		}
+		if (index < MAP_TILE_COUNT)
+		{
+			x = static_cast<char>(index % static_cast<std::size_t>(MAP_WIDTH));
+			y = static_cast<char>(index / static_cast<std::size_t>(MAP_WIDTH));
+			move_cursor(x, y);
+		}
+	}
+	virtual void write_line(std::string s, char x, char y)
+	{
+		move_cursor(x, y);
+		const std::size_t start_index = _cursor_tile_index();
+		std::size_t index = start_index;
+		while (index < MAP_TILE_COUNT && (index - start_index) < s.length())
+		{
+			_buffers[_back_buffer_index][index] = s[index - start_index];
+			index += 1;
+		}
+		if (index < MAP_TILE_COUNT)
+		{
+			index += MAP_WIDTH;
+			x = x;
+			y = static_cast<char>(index / static_cast<std::size_t>(MAP_WIDTH));
+			move_cursor(x, y);
+		}
+	}
 
 protected:
 	std::array<std::vector<char>, 2> _buffers;
