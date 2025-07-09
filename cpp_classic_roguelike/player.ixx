@@ -10,6 +10,8 @@ export class PlayerBrain : public MobBrain
 {
 	void update(Mob& mob, TileMap& map)
 	{
+		//mob._mining_skill = 3;
+
 		auto key = Console::instance().wait_key();
 		//if (key_maybe.has_value())
 		{

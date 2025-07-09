@@ -34,6 +34,12 @@ public:
 		_default_random_engine =
 			std::move(std::default_random_engine(_random_device()));
 		_default_random_engine.seed(_rand_seed_counter++);
+
+		auto d6 = std::uniform_int_distribution(1, 6);
+		_mining_skill =
+			d6(_default_random_engine) +
+			d6(_default_random_engine) +
+			d6(_default_random_engine);
 	}
 	Mob(
 		Glyph glyph,
@@ -44,6 +50,12 @@ public:
 		_default_random_engine =
 			std::move(std::default_random_engine(_random_device()));
 		_default_random_engine.seed(_rand_seed_counter++);
+
+		auto d6 = std::uniform_int_distribution(1, 6);
+		_mining_skill =
+			d6(_default_random_engine) +
+			d6(_default_random_engine) +
+			d6(_default_random_engine);
 	}
 	virtual ~Mob() = default;
 
@@ -94,17 +106,24 @@ public:
 		}
 
 		if (map[get_position()] == TileGlyphIndex::Wall)
-			_next_action_time += 5.0;
+		{
+			double mining_speed = (static_cast<double>(_mining_skill) / 10.0);
+			_next_action_time += 5.0 / mining_speed;
+		}
 		else _next_action_time += 1.0;
 	}
 
 private:
+	static uint64_t _rand_seed_counter;
+	static std::random_device _random_device;
+
 	std::unique_ptr<MobBrain> _brain;
 	double _next_action_time = 1.0;
-	static uint64_t _rand_seed_counter;
 	std::default_random_engine _default_random_engine;
-	static std::random_device _random_device;
+	uint16_t _mining_skill = 0;
 	bool _is_dead = false;
+
+	friend class PlayerBrain;
 };
 
 std::random_device Mob::_random_device;
