@@ -13,13 +13,12 @@ import glyph;
 import sizei;
 
 // std imports
+import <algorithm>;
 import <array>;
-import <chrono>;
 import <exception>;
 import <optional>;
 import <print>;
 import <stdint.h>;
-import <thread>;
 import <vector>;
 
 // platform imports
@@ -48,7 +47,7 @@ public:
 			throw std::exception("Error initializing SDL3");
 		}
 
-		_window = SDL_CreateWindow("CPP Classic Roguelike", 1600, 800, 0);
+		_window = SDL_CreateWindow("CPP Classic Roguelike", 800, 600, 0);
 		if (!_window)
 		{
 			SDL_ShowSimpleMessageBox(
@@ -72,6 +71,23 @@ public:
 
 			throw std::exception("Error creating renderer");
 		}
+
+		SDL_DisplayMode const* display_mode =
+		//SDL_GetCurrentDisplayMode(0, &display_mode);
+		SDL_GetDesktopDisplayMode(1);
+		if (display_mode)
+		{
+			_scale = static_cast<float>(std::min(
+				static_cast<float>(display_mode->w) / static_cast<float>(width) / 10.0,
+				static_cast<float>(display_mode->h) / static_cast<float>(height) / 10.0
+			));
+		}
+		else {
+			std::println("SDL_GetError(): {}", SDL_GetError());
+			_scale = 1.0;
+		}
+		set_console_size(width, height);
+		SDL_SetWindowFullscreen(_window, true);
 	}
 	virtual ~SDL3Console()
 	{
@@ -86,6 +102,13 @@ public:
 			_window = nullptr;;
 		}
 		SDL_Quit();
+	}
+
+	virtual void clear()
+	{
+		SDL_SetRenderScale(_renderer, 1.0, 1.0);
+		SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
+		SDL_RenderClear(_renderer);
 	}
 
 	/*virtual Sizei get_console_size() const;*/
@@ -116,12 +139,8 @@ public:
 
 	virtual void present()
 	{
-		SDL_SetRenderScale(_renderer, 1.0, 1.0);
-		SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
-		SDL_RenderClear(_renderer);
-
 		SDL_SetRenderDrawColor(_renderer, 255, 255, 255, 255);
-		SDL_SetRenderScale(_renderer, 2.0, 2.0);
+		SDL_SetRenderScale(_renderer, _scale, _scale);
 		std::size_t index = 0;
 		std::array<char, 2> chars = { ' ', '\0' };
 		for (std::size_t y = 0; y < MAP_HEIGHT; ++y)
@@ -134,7 +153,12 @@ public:
 				{
 					_buffers[_fore_buffer_index()][index] = ch;
 					chars[0] = ch;
-					SDL_RenderDebugText(_renderer, x * 10, y * 10, &chars[0]);
+					SDL_RenderDebugText(
+						_renderer,
+						static_cast<float>(x) * 10.0f,
+						static_cast<float>(y) * 10.0f,
+						&chars[0]
+					);
 				}
 
 				index += 1;
@@ -149,41 +173,22 @@ public:
 
 	virtual void set_console_height(char height)
 	{
-		//auto blah = GetSystemMetrics(SM_CYMIN);
-
-		//auto stdoutput = GetStdHandle(STD_OUTPUT_HANDLE);
-
-		//CONSOLE_SCREEN_BUFFER_INFOEX buffer_info = {};
-		//buffer_info.cbSize = sizeof(CONSOLE_SCREEN_BUFFER_INFOEX);
-		//GetConsoleScreenBufferInfoEx(stdoutput, &buffer_info);
-		//buffer_info.dwSize.Y = (height + 2); // Just slightly...
-		//buffer_info.srWindow.Bottom = buffer_info.srWindow.Top + (height + 1);
-		///*SMALL_RECT screen = { 0, 0, 1, 1 };
-		//SetConsoleWindowInfo(stdoutput, true, &screen);*/
-		//if ((height + 1) > buffer_info.dwMaximumWindowSize.Y)
-		//	buffer_info.dwMaximumWindowSize.Y = (height + 1);
-		//if (!SetConsoleScreenBufferInfoEx(stdoutput, &buffer_info))
-		//	std::print("    SetConsoleScreenBufferInfoEx error: {}", GetLastError());
+		int w = 0, h = 0;
+		SDL_GetWindowSize(_window, &w, &h);
+		h = static_cast<int>(height) * 10 * _scale;
+		SDL_SetWindowSize(_window, w, h);
 	}
 	virtual void set_console_width(char width)
 	{
-		//auto blah = GetSystemMetrics(SM_CXMIN);
-
-		//auto stdoutput = GetStdHandle(STD_OUTPUT_HANDLE);
-
-		//CONSOLE_SCREEN_BUFFER_INFOEX buffer_info = {};
-		//buffer_info.cbSize = sizeof(CONSOLE_SCREEN_BUFFER_INFOEX);
-		//GetConsoleScreenBufferInfoEx(stdoutput, &buffer_info);
-		//buffer_info.dwSize.X = (width - 0); // ...bugged.
-		//buffer_info.srWindow.Right = buffer_info.srWindow.Left + (width - 1);
-		//if ((width - 1) > buffer_info.dwMaximumWindowSize.X)
-		//	buffer_info.dwMaximumWindowSize.X = (width - 1);
-		//if (!SetConsoleScreenBufferInfoEx(stdoutput, &buffer_info))
-		//	std::print("    SetConsoleScreenBufferInfoEx error: {}", GetLastError());
+		int w = 0, h = 0;
+		SDL_GetWindowSize(_window, &w, &h);
+		w = static_cast<int>(width) * 10 * _scale;
+		SDL_SetWindowSize(_window, w, h);
 	}
 
 	virtual void set_full_screen(bool on)
 	{
+		SDL_SetWindowFullscreen(_window, on);
 		/*if (!SetConsoleDisplayMode(GetStdHandle(STD_OUTPUT_HANDLE), CONSOLE_FULLSCREEN, 0))
 			std::print("    SetConsoleDisplayMode error: {}", GetLastError());*/
 
@@ -223,21 +228,6 @@ public:
 		//	std::print("    SendInputerror: {}", GetLastError());
 	}
 
-	virtual KeyEvent wait_key()
-	{
-		while (true)
-		{
-			auto key_maybe = read_key();
-			if (key_maybe.has_value())
-			{
-				return key_maybe.value();
-			}
-			
-			using namespace std::chrono_literals;
-			std::this_thread::sleep_for(1ms);
-		}
-	}
-
 
 	virtual void write(BaseMap<TileGlyphIndex>& map)
 	{
@@ -275,6 +265,8 @@ protected:
 
 	SDL_Window* _window = nullptr;
 	SDL_Renderer* _renderer = nullptr;
+
+	float _scale;
 };
 
 //Sizei SDL3Console::get_console_size() const

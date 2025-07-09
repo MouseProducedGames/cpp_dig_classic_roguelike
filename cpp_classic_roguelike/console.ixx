@@ -9,8 +9,10 @@ import sizei;
 import tile_position;
 
 // std imports
+import <chrono>;
 import <optional>;
 import <print>;
+import <thread>;
 
 export class Console
 {
@@ -28,14 +30,14 @@ public:
 		show_cursor();
 	}
 
-	void clear()
+	virtual void clear()
 	{
 		std::print("\x1b[2J");
 	}
 
 	/*virtual Sizei get_console_size() const = 0;*/
 
-	void hide_cursor()
+	virtual void hide_cursor()
 	{
 		std::print("\x1b[?25l");
 	}
@@ -46,7 +48,7 @@ public:
 	}
 
 	void move_cursor(TilePosition pos) { move_cursor(pos.x, pos.y); }
-	void move_cursor(char x, char y)
+	virtual void move_cursor(char x, char y)
 	{
 		//printf("\033[%d;%dH", (y), (x));
 		//std::print("\033[{};{}H", ((unsigned int)y), ((unsigned int)x));
@@ -62,7 +64,7 @@ public:
 
 	virtual void set_console_height(char height) = 0;
 	void set_console_size(TilePosition pos) { set_console_size(pos.x, pos.y); }
-	void set_console_size(char width, char height)
+	virtual void set_console_size(char width, char height)
 	{
 		set_console_height(height);
 		set_console_width(width);
@@ -71,12 +73,25 @@ public:
 
 	virtual void set_full_screen(bool on) = 0;
 
-	void show_cursor()
+	virtual void show_cursor()
 	{
 		std::print("\x1b[?25h");
 	}
 
-	virtual KeyEvent wait_key() = 0;
+	virtual KeyEvent wait_key()
+	{
+		while (true)
+		{
+			auto key_maybe = read_key();
+			if (key_maybe.has_value())
+			{
+				return key_maybe.value();
+			}
+
+			using namespace std::chrono_literals;
+			std::this_thread::sleep_for(1ms);
+		}
+	}
 
 	virtual void write(BaseMap<TileGlyphIndex>& map) = 0;
 	virtual void write(char ch) = 0;

@@ -114,7 +114,7 @@ public:
 	}
 
 private:
-	static uint64_t _rand_seed_counter;
+	static unsigned int _rand_seed_counter;
 	static std::random_device _random_device;
 
 	std::unique_ptr<MobBrain> _brain;
@@ -127,4 +127,4 @@ private:
 };
 
 std::random_device Mob::_random_device;
-uint64_t Mob::_rand_seed_counter = 0;
+unsigned int Mob::_rand_seed_counter = 0;

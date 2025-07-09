@@ -64,6 +64,7 @@ int main(void)
 	TileMap test(MAP_WIDTH, MAP_HEIGHT);
 	while (true)
 	{
+		Console::instance().clear();
 		//test.set_tile(player->get_position(), TileGlyphIndex::Floor);
 		Console::instance().write(test);
 		for (auto& mob : mobs)
