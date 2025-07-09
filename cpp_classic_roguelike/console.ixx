@@ -1,3 +1,5 @@
+#include "platform.hpp"
+
 export module console;
 
 // local imports
@@ -126,7 +128,7 @@ protected:
 private:
 	static std::shared_ptr<Console> _INSTANCE;
 
-	friend void make_platform_console(char width, char height);
+	friend void make_platform_console(char width, char height, Platform platform);
 };
 
 std::shared_ptr<Console> Console::_INSTANCE;

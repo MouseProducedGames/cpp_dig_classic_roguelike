@@ -6,7 +6,7 @@ import constants;
 import glyph;
 import key_event;
 import mob;
-#include "platform.hpp"
+#include "make_platform_console.hpp"
 import player;
 import tile_displacement;
 import tile_position;

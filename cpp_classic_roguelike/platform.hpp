@@ -1,7 +1,14 @@
-// local imports
-import console;
+#pragma once
 
-// std includes
-#include<memory>
+enum class Platform {
+#ifdef _CONSOLE
+	Console,
+#endif
+	SDL3
+};
 
-void make_platform_console(char width, char height);
+#ifdef _CONSOLE
+#define DEFAULT_PLATFORM Platform::Console
+#else
+#define DEFAULT_PLATFORM Platform::SDL3
+#endif
