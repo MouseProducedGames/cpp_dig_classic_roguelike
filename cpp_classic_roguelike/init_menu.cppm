@@ -7,6 +7,7 @@ import constants;
 #include "make_platform_console.hpp"
 
 // std imports
+import <cctype>;
 import <format>;
 import <string>;
 import <vector>;
