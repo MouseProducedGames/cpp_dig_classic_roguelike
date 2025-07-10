@@ -4,9 +4,10 @@ import brains;
 import console;
 import constants;
 import glyph;
+#include "init_menu.hpp"
 import key_event;
-import mob;
 #include "make_platform_console.hpp"
+import mob;
 import player;
 import tile_displacement;
 import tile_position;
@@ -33,57 +34,10 @@ struct {
 	}
 } SortByNextActionTime;
 
-char read_char();
-
-void print(std::string s);
-
-void println();
-
-void println(std::string s);
-
 int main(void)
 {
-	make_platform_console(MAP_WIDTH + 1, MAP_HEIGHT + 1);
+	if (!init_menu()) return 0;
 
-	std::vector<char> from_index_chars = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
-	std::reverse(from_index_chars.begin(), from_index_chars.end());
-	std::vector<char> index_chars;
-	std::vector<Platform> index_platforms;
-#ifdef _CONSOLE
-	index_chars.push_back(from_index_chars.back());
-	from_index_chars.pop_back();
-	index_platforms.push_back(Platform::Console);
-#endif // _CONSOLE
-
-	index_chars.push_back(from_index_chars.back());
-	from_index_chars.pop_back();
-	index_platforms.push_back(Platform::SDL3);
-
-	size_t index = 0;
-#ifdef _CONSOLE
-	println(std::format("{}) Classic terminal", index_chars[index++]));
-#endif // _CONSOLE
-
-	println(std::format("{}) SDL3 terminal", index_chars[index++]));
-	println();
-#ifndef _CONSOLE
-	Console::instance().present();
-#endif // !_CONSOLE
-
-	char output = read_char();
-	output = std::toupper(output);
-	auto index_char_it = std::find(index_chars.begin(), index_chars.end(), output);
-	if (index_char_it == index_chars.end()) return 0;
-
-	size_t index_char = index_char_it - index_chars.begin();
-	if (index_platforms[index_char] != DEFAULT_PLATFORM)
-	{
-		make_platform_console(
-			MAP_WIDTH + 1,
-			MAP_HEIGHT + 1,
-			index_platforms[index_char]
-		);
-	}
 	Console::instance().clear();
 
 	//console->set_full_screen(true);
@@ -214,46 +168,4 @@ int main(void)
 	}
 
 	return 0;
-}
-
-char read_char()
-{
-#ifdef _CONSOLE
-	std::println("Select an option and tap enter or return");
-	std::println("Any other key to exit");
-	char output = ' ';
-	std::cin >> output;
-	return output;
-#else
-	println("Select an option");
-	println("Any other key to exit");
-	return Console::instance().wait_key().key_char_union.ascii_char;
-#endif // _CONSOLE
-}
-
-void print(std::string s)
-{
-#ifdef _CONSOLE
-	std::print("{}", s);
-#else
-	Console::instance().write(s);
-#endif // _CONSOLE
-}
-
-void println()
-{
-#ifdef _CONSOLE
-	std::println();
-#else
-	Console::instance().write_line();
-#endif // _CONSOLE
-}
-
-void println(std::string s)
-{
-#ifdef _CONSOLE
-	std::println("{}", s);
-#else
-	Console::instance().write_line(s);
-#endif // _CONSOLE
 }
