@@ -16,6 +16,7 @@
 | Move or Attack | South-West | 'z' or Numpad1 |
 | Move or Attack | West       | 'a' or Numpad4 |
 | Do nothing     | —          | 'r' or Numpad5 |
+- End game: Walk off the map or get eaten.
 ## Build
 ### Visual Studio 2022
 - Only the x64 builds are tested working.
