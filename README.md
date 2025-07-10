@@ -19,7 +19,6 @@
 - End game: Walk off the map or get eaten.
 ## Build
 ### Visual Studio 2022
-- Only the x64 builds are tested working.
 - Place the appropriate SDL3 files in the folders as indicated by `cpp_classic_roguelike\platforms\SDL3\SDL3\SDL3.txt`
 - SDL files not supplied.
 - Copy `SDL.lib ` and `SDL.dll` to the output directory.

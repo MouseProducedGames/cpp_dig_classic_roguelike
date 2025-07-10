@@ -4,9 +4,16 @@
 
 /.vs/cpp_classic_roguelike
 /cpp_classic_roguelike/x64
+/cpp_classic_roguelike/Debug
+/cpp_classic_roguelike/Debug (noconsole)
+/cpp_classic_roguelike/Release
+/cpp_classic_roguelike/Release (noconsole)
 /x64
+/Debug
+/Debug (noconsole)
+/Release
+/Release (noconsole)
 cpp_classic_roguelike/platforms/SDL3/SDL3/include
 cpp_classic_roguelike/platforms/SDL3/SDL3/libs
 
-*.vcxproj
-*.vcxproj.*
+*.vcxproj.user
