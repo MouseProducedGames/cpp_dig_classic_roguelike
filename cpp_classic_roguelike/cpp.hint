@@ -1,0 +1,10 @@
+// This is required due to incomplete macro functionality:
+//   <https://github.com/microsoft/vscode-cpptools/issues/13141>
+
+#define DECLARE_INTERNED_STRING(type, name) \
+	extern InternedString type##_##name
+
+#define DEFINE_INTERNED_STRING(type, name) \
+	InternedString type##_##name(#name)
+
+#define DECLARE_TAG(name) DECLARE_INTERNED_STRING(TAG, name)

@@ -38,10 +38,7 @@ int main(void)
 	{
 		Console::instance().clear();
 		Console::instance().write(test);
-		for (auto& mob : mobs)
-		{
-			Console::instance().write(mob->get_glyph(), mob->get_position());
-		}
+		Console::instance().write(mobs);
 
 		Console::instance().present();
 

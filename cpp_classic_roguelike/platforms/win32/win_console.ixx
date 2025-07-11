@@ -1,3 +1,6 @@
+// local includes
+#include "../../tags.hpp"
+
 // Platform includes
 #define WIN32_LEAN_AND_MEAN
 //#define WINVER 0x0500
@@ -26,7 +29,6 @@ import <optional>;
 import <print>;
 import <stdint.h>;
 import <thread>;
-import <vector>;
 
 // platform imports
 //import windows;

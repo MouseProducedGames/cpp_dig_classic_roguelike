@@ -1,0 +1,5 @@
+#include "tags.hpp"
+
+#define DEFINE_TAG(name) DEFINE_INTERNED_STRING(TAG, name)
+
+DEFINE_TAG(PLAYER);

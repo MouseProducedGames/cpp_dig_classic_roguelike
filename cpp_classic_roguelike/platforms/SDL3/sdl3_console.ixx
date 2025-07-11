@@ -1,3 +1,4 @@
+// SDL3 includes
 #include "SDL3/SDL.h"
 
 // Include files (currently) must go above the module export.
@@ -22,7 +23,6 @@ import <optional>;
 import <print>;
 import <stdint.h>;
 import <thread>;
-import <vector>;
 
 // platform imports
 //import windows;
@@ -235,12 +235,12 @@ public:
 	}
 	virtual void write(char ch, char x, char y)
 	{
-		move_cursor(x, y);
-		write(ch);
+		if (move_cursor(x, y)) write(ch);
 	}
 	virtual void write(std::string s, char x, char y)
 	{
-		move_cursor(x, y);
+		if (!move_cursor(x, y)) return;
+
 		const std::size_t start_index = _cursor_tile_index();
 		std::size_t index = start_index;
 		while (index < MAP_TILE_COUNT && (index - start_index) < s.length())
@@ -257,7 +257,8 @@ public:
 	}
 	virtual void write_line(std::string s, char x, char y)
 	{
-		move_cursor(x, y);
+		if (!move_cursor(x, y)) return;
+		
 		const std::size_t start_index = _cursor_tile_index();
 		std::size_t index = start_index;
 		while (index < MAP_TILE_COUNT && (index - start_index) < s.length())

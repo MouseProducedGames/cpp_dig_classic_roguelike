@@ -1,4 +1,10 @@
+#include "interned_string.hpp"
+
+// Include files (currently) must go above the module export.
+#pragma warning( push )
+#pragma warning( disable : 5201 )
 export module map_object;
+#pragma warning( pop )
 
 // local imports
 import constants;
@@ -6,29 +12,44 @@ import glyph;
 import tile_position;
 import tile_displacement;
 
+// std imports
+import <utility>;
+import <vector>;
+
 export class MapObject
 {
 public:
 	// de/constructors
-	MapObject(Glyph glyph) : _glyph(glyph) {}
-	MapObject(Glyph glyph, TilePosition position) : _glyph(glyph), _position(position) {}
+	MapObject() {}
+	MapObject(std::initializer_list<InternedString> tags)
+	{
+		_tags.insert(_tags.begin(), tags.begin(), tags.end());
+	}
+	MapObject(TilePosition position) : _position(position) {}
+	MapObject(
+		TilePosition position,
+		std::initializer_list<InternedString> tags
+	) : _position(position)
+	{
+		_tags.insert(_tags.begin(), tags.begin(), tags.end());
+	}
 	virtual ~MapObject() = default;
 
 	// properties
-	const Glyph& get_glyph() const noexcept
-	{
-		return _glyph;
-	}
-	const Glyph& set_glyph(const Glyph& new_glyph) noexcept
-	{
-		_glyph = new_glyph;
-		return _glyph;
-	}
-
 	const TilePosition& get_position() const noexcept
 	{
 		return _position;
 	}
+
+	bool has_tag(const char* tag_char_string) const noexcept
+	{
+		return has_tag(InternedString(tag_char_string));
+	}
+	bool has_tag(InternedString tag) const noexcept
+	{
+		return std::find(_tags.begin(), _tags.end(), tag) != _tags.end();
+	}
+
 	const TilePosition& set_position(const TilePosition& new_pos) noexcept
 	{
 		_position = new_pos;
@@ -42,6 +63,7 @@ public:
 	}
 
 protected:
+	// Change to `<flat_set>` after Visual Studio implements it.
+	std::vector<InternedString> _tags;
 	TilePosition _position;
-	Glyph _glyph;
 };

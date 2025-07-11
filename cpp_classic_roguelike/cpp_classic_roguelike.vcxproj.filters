@@ -81,11 +81,18 @@
     <ClCompile Include="game.cppm">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="interned_string.cppm">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tags.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="docs\plan.md" />
     <None Include="platforms\SDL3\SDL3\libs\win32\SDL3.dll" />
     <None Include="platforms\SDL3\SDL3\libs\x64\SDL3.dll" />
+    <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="platforms\SDL3\SDL3\libs\win32\SDL3.lib" />
@@ -102,6 +109,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="game.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="interned_string.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tags.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

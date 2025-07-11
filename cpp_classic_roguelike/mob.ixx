@@ -1,4 +1,10 @@
+#include "interned_string.hpp"
+
+// Include files (currently) must go above the module export.
+#pragma warning( push )
+#pragma warning( disable : 5201 )
 export module mob;
+#pragma warning( pop )
 
 // local imports
 import glyph;
@@ -28,8 +34,8 @@ export class Mob : public MapObject
 {
 public:
 	// de/constructors
-	Mob(Glyph glyph, std::unique_ptr<MobBrain> brain)
-		: MapObject(glyph), _brain(std::move(brain))
+	Mob(std::unique_ptr<MobBrain> brain)
+		: MapObject(), _brain(std::move(brain))
 	{
 		_default_random_engine =
 			std::move(std::default_random_engine(_random_device()));
@@ -42,11 +48,44 @@ public:
 			d6(_default_random_engine);
 	}
 	Mob(
-		Glyph glyph,
+		std::unique_ptr<MobBrain> brain,
+		std::initializer_list<InternedString> tags
+	)
+		: MapObject(tags), _brain(std::move(brain))
+	{
+		_default_random_engine =
+			std::move(std::default_random_engine(_random_device()));
+		_default_random_engine.seed(_rand_seed_counter++);
+
+		auto d6 = std::uniform_int_distribution(1, 6);
+		_mining_skill =
+			d6(_default_random_engine) +
+			d6(_default_random_engine) +
+			d6(_default_random_engine);
+	}
+	Mob(
 		TilePosition position,
 		std::unique_ptr<MobBrain> brain
-	) : MapObject(glyph, position), _brain(std::move(brain))
+	) : MapObject(position), _brain(std::move(brain))
 	{
+		_default_random_engine =
+			std::move(std::default_random_engine(_random_device()));
+		_default_random_engine.seed(_rand_seed_counter++);
+
+		auto d6 = std::uniform_int_distribution(1, 6);
+		_mining_skill =
+			d6(_default_random_engine) +
+			d6(_default_random_engine) +
+			d6(_default_random_engine);
+	}
+	Mob(
+		TilePosition position,
+		std::unique_ptr<MobBrain> brain,
+		std::initializer_list<InternedString> tags
+	) : MapObject(position, tags), _brain(std::move(brain))
+	{
+		_tags.insert(_tags.begin(), tags.begin(), tags.end());
+
 		_default_random_engine =
 			std::move(std::default_random_engine(_random_device()));
 		_default_random_engine.seed(_rand_seed_counter++);

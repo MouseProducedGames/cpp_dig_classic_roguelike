@@ -1,15 +1,19 @@
 // this include
 #include "game.hpp"
+#include "tags.hpp"
 
 // local imports
 import brains;
 import constants;
+import mob;
 import player;
 
 // std imports
 import <chrono>;
+import <memory>;
 import <ranges>;
 import <thread>;
+import <vector>;
 
 // No, I don't know why it has to be done like this.
 struct {
@@ -67,6 +71,7 @@ void clean_mobs(std::vector<std::shared_ptr<Mob>>& mobs)
 	}
 	removes.clear();
 }
+
 void initial_mobs_spawn(
 	std::vector<std::shared_ptr<Mob>>& mobs,
 	std::default_random_engine& random_device_impl,
@@ -77,7 +82,6 @@ void initial_mobs_spawn(
 	for (int i = 1; i++ < 20;)
 	{
 		mobs.push_back(std::make_shared<Mob>(
-			'W',
 			TilePosition(
 				rand_x_pos(random_device_impl),
 				rand_y_pos(random_device_impl)
@@ -86,16 +90,18 @@ void initial_mobs_spawn(
 		));
 	}
 }
+
 std::shared_ptr<Mob> initial_player_spawn(std::vector<std::shared_ptr<Mob>>& mobs)
 {
-	std::shared_ptr<Mob> player = std::make_shared<Mob>(
-		'@',
+	std::shared_ptr<Mob> player = std::shared_ptr<Mob>(new Mob(
 		TilePosition(0, MAP_HEIGHT / 2),
-		std::unique_ptr<MobBrain>(new PlayerBrain())
-	);
+		std::unique_ptr<MobBrain>(new PlayerBrain()),
+		{ TAG_PLAYER }
+	));
 	mobs.push_back(player);
 	return player;
 }
+
 void update_mobs(std::vector<std::shared_ptr<Mob>>& mobs, TileMap& map)
 {
 	for (auto& mob : mobs)

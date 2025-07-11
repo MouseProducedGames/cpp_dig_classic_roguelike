@@ -41,6 +41,7 @@
     <ClCompile Include="game.cppm" />
     <ClCompile Include="glyph.ixx" />
     <ClCompile Include="init_menu.cppm" />
+    <ClCompile Include="interned_string.cppm" />
     <ClCompile Include="key_event.ixx" />
     <ClCompile Include="main.cppm" />
     <ClCompile Include="make_platform_console.cpp" />
@@ -52,6 +53,7 @@
     <ClCompile Include="brains.ixx" />
     <ClCompile Include="recti.ixx" />
     <ClCompile Include="sizei.ixx" />
+    <ClCompile Include="tags.cpp" />
     <ClCompile Include="tile_displacement.ixx" />
     <ClCompile Include="tile_map.ixx" />
     <ClCompile Include="tile_position.ixx" />
@@ -59,6 +61,7 @@
     <ClCompile Include="virtual_scan_code.ixx" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="cpp.hint" />
     <None Include="docs\plan.md" />
     <None Include="platforms\SDL3\SDL3\libs\win32\SDL3.dll">
       <FileType>Document</FileType>
@@ -87,8 +90,10 @@
   <ItemGroup>
     <ClInclude Include="game.hpp" />
     <ClInclude Include="init_menu.hpp" />
+    <ClInclude Include="interned_string.hpp" />
     <ClInclude Include="make_platform_console.hpp" />
     <ClInclude Include="platform.hpp" />
+    <ClInclude Include="tags.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

@@ -1,3 +1,5 @@
+// local includes
+#include "tags.hpp"
 #include "platform.hpp"
 
 #pragma warning( push )
@@ -10,14 +12,17 @@ import base_map;
 import constants;
 import glyph;
 import key_event;
+import mob;
 import sizei;
 import tile_position;
 
 // std imports
 import <chrono>;
+import <memory>;
 import <optional>;
 import <print>;
 import <thread>;
+import <vector>;
 
 export class Console
 {
@@ -60,15 +65,17 @@ public:
 		return *_INSTANCE;
 	}
 
-	void move_cursor(TilePosition pos) { move_cursor(pos.x, pos.y); }
-	virtual void move_cursor(char x, char y)
+	bool move_cursor(TilePosition pos) { return move_cursor(pos.x, pos.y); }
+	virtual bool move_cursor(char x, char y)
 	{
 		//printf("\033[%d;%dH", (y), (x));
 		//std::print("\033[{};{}H", ((unsigned int)y), ((unsigned int)x));
-		if (x < 0 || x >= MAP_WIDTH || y < 0 || y >= MAP_HEIGHT) return;
+		if (x < 0 || x >= MAP_WIDTH || y < 0 || y >= MAP_HEIGHT) return false;
 
 		_cursor_x = x;
 		_cursor_y = y;
+
+		return true;
 	}
 
 	virtual void present() = 0;
@@ -110,6 +117,15 @@ public:
 
 	virtual void write(BaseMap<TileGlyphIndex>& map) = 0;
 	virtual void write(char ch) = 0;
+	virtual void write(std::vector<std::shared_ptr<Mob>>& mobs)
+	{
+		for (auto& mob : mobs)
+		{
+			if (!move_cursor(mob->get_position())) continue;
+			if (mob->has_tag(TAG_PLAYER)) write('@');
+			else write('W');
+		}
+	}
 	virtual void write(std::string s)
 	{
 		write(s, _cursor_x, _cursor_y);
