@@ -1,4 +1,4 @@
-#include "interned_string.hpp"
+#include "tags.hpp"
 
 // Include files (currently) must go above the module export.
 #pragma warning( push )
@@ -21,14 +21,14 @@ export class MapObject
 public:
 	// de/constructors
 	MapObject() {}
-	MapObject(std::vector<InternedString> tags)
+	MapObject(std::vector<TagName> tags)
 	{
 		_tags.insert(_tags.begin(), tags.begin(), tags.end());
 	}
 	MapObject(TilePosition position) : _position(position) {}
 	MapObject(
 		TilePosition position,
-		std::vector<InternedString> tags
+		std::vector<TagName> tags
 	) : _position(position)
 	{
 		_tags.insert(_tags.begin(), tags.begin(), tags.end());
@@ -43,9 +43,9 @@ public:
 
 	bool has_tag(const char* tag_char_string) const noexcept
 	{
-		return has_tag(InternedString(tag_char_string));
+		return has_tag(TagName(tag_char_string));
 	}
-	bool has_tag(InternedString tag) const noexcept
+	bool has_tag(TagName tag) const noexcept
 	{
 		return std::find(_tags.begin(), _tags.end(), tag) != _tags.end();
 	}
@@ -64,6 +64,6 @@ public:
 
 protected:
 	// Change to `<flat_set>` after Visual Studio implements it.
-	std::vector<InternedString> _tags;
+	std::vector<TagName> _tags;
 	TilePosition _position;
 };

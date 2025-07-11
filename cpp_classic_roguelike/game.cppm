@@ -82,7 +82,7 @@ void initial_mobs_spawn(
 	auto chance_large = std::uniform_int_distribution<int>(1, 100);
 	for (int i = 1; i++ < 20;)
 	{
-		std::vector<InternedString> tags;
+		std::vector<TagName> tags;
 		if (chance_large(random_device_impl) <= 5) tags.push_back(TAG_LARGE);
 		mobs.push_back(std::shared_ptr<Mob>(new Mob(
 			TilePosition(

@@ -9,41 +9,42 @@
 import <unordered_set>;
 import <utility>;
 
-class InternedString;
+template<typename T> class InternedString;
 
-template<> struct std::hash<InternedString>;
+template<typename T> struct std::hash<InternedString<T>>;
 
-InternedString::InternedString() noexcept : _char_string(nullptr) {}
-InternedString::InternedString(const char* s)
-	: _char_string(find_id(s)) {}
+template<typename T> InternedString<T>::InternedString() noexcept : _char_string(nullptr) {}
+template<typename T> InternedString<T>::InternedString(const char* s)
+	: _char_string(find_id(s)) {
+}
 
-InternedString::operator bool() const noexcept
+template<typename T> InternedString<T>::operator bool() const noexcept
 {
 	return _char_string != nullptr;
 }
 
-bool InternedString::operator==(const InternedString& rhs) const noexcept
+template<typename T> bool InternedString<T>::operator==(const InternedString& rhs) const noexcept
 {
 	return _char_string == rhs._char_string;
 }
-bool InternedString::operator!=(const InternedString& rhs) const noexcept
+template<typename T> bool InternedString<T>::operator!=(const InternedString& rhs) const noexcept
 {
 	return !(*this == rhs);
 }
-bool InternedString::operator<(const InternedString& rhs) const noexcept
+template<typename T> bool InternedString<T>::operator<(const InternedString& rhs) const noexcept
 {
 	return this->_char_string < rhs._char_string;
 }
 
-//const char* InternedString::operator*() const noexcept
+//const char* InternedString<T>::operator*() const noexcept
 //{
 //	return _char_string;
 //}
 
-InternedString InternedString::find(const char* s)
+template<typename T> InternedString<T> InternedString<T>::find(const char* s)
 {
 	if (s == nullptr || !strlen(s)) return {};
-		
+
 	auto& interned_string_set = get_interned_string_set();
 	auto it = interned_string_set.find(s);
 	if (it == interned_string_set.end()) return {};
@@ -54,12 +55,12 @@ InternedString InternedString::find(const char* s)
 }
 
 // may return null.
-const char* InternedString::find_id(const char* s)
+template<typename T> const char* InternedString<T>::find_id(const char* s)
 {
 	return find(s)._char_string;
 }
 
-InternedString InternedString::find_or_register(const char* s)
+template<typename T> InternedString<T> InternedString<T>::find_or_register(const char* s)
 {
 	if (s == nullptr || !strlen(s)) return {};
 		
@@ -70,14 +71,14 @@ InternedString InternedString::find_or_register(const char* s)
 	return InternedString(*(it.first));
 }
 
-std::unordered_set<const char*>& InternedString::get_interned_string_set() noexcept
+template<typename T> std::unordered_set<const char*>& InternedString<T>::get_interned_string_set() noexcept
 {
 	static std::unordered_set<const char*> interned_string_set;
 	return interned_string_set;
 }
 
-std::size_t std::hash<InternedString>::operator()(
-	const InternedString& is
+template<typename T> std::size_t std::hash<InternedString<T>>::operator()(
+	const InternedString<T>& is
 ) const noexcept
 {
 	//return std::hash<const char*>()(is._char_string);

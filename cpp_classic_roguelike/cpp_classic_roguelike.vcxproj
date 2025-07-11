@@ -41,7 +41,6 @@
     <ClCompile Include="game.cppm" />
     <ClCompile Include="glyph.ixx" />
     <ClCompile Include="init_menu.cppm" />
-    <ClCompile Include="interned_string.cppm" />
     <ClCompile Include="key_event.ixx" />
     <ClCompile Include="main.cppm" />
     <ClCompile Include="make_platform_console.cpp" />

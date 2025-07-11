@@ -81,9 +81,6 @@
     <ClCompile Include="game.cppm">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="interned_string.cppm">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="tags.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

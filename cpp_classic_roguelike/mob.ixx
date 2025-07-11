@@ -20,8 +20,8 @@ import <memory>;
 import <random>;
 import <unordered_map>;
 
-typedef std::unordered_map<InternedString, double> TagMultiplierLookup;
-typedef std::unordered_map<InternedString, TagMultiplierLookup> SkillTagMultipllierLookup;
+typedef std::unordered_map<TagName, double> TagMultiplierLookup;
+typedef std::unordered_map<SkillName, TagMultiplierLookup> SkillTagMultipllierLookup;
 
 #define _3d6() (d6(_default_random_engine) + \
 	d6(_default_random_engine) + \
@@ -57,7 +57,7 @@ public:
 	}
 	Mob(
 		std::unique_ptr<MobBrain> brain,
-		std::vector<InternedString> tags
+		std::vector<TagName> tags
 	)
 		: MapObject(tags), _brain(std::move(brain))
 	{
@@ -85,7 +85,7 @@ public:
 	Mob(
 		TilePosition position,
 		std::unique_ptr<MobBrain> brain,
-		std::vector<InternedString> tags
+		std::vector<TagName> tags
 	) : MapObject(position, tags), _brain(std::move(brain))
 	{
 		_default_random_engine =
@@ -134,12 +134,12 @@ public:
 		return _random_device;
 	}
 
-	uint16_t get_raw_skill(InternedString skill_name)
+	uint16_t get_raw_skill(SkillName skill_name)
 	{
 		return _skills.get_raw_skill(skill_name);
 	}
 
-	double get_skill_value(InternedString skill_name)
+	double get_skill_value(SkillName skill_name)
 	{
 		double value = _skills.get_skill_value(skill_name);
 		//auto& tag_multiplier_lookup = get_tag_multiplier_lookup(skill_name);
@@ -187,7 +187,7 @@ private:
 
 	friend class PlayerBrain;
 
-	TagMultiplierLookup& get_tag_multiplier_lookup(InternedString skill_name)
+	TagMultiplierLookup& get_tag_multiplier_lookup(SkillName skill_name)
 	{
 		auto tag_mul_it = _skill_tag_multipliers.find(skill_name);
 		if (tag_mul_it == _skill_tag_multipliers.end())
@@ -198,10 +198,7 @@ private:
 		return _skill_tag_multipliers[skill_name];
 	}
 
-	double get_skill_tag_multiplier(
-		InternedString skill_name,
-		InternedString tag_name
-	)
+	double get_skill_tag_multiplier(SkillName skill_name, TagName tag_name)
 	{
 		if (!skill_name || !tag_name) return 1.0;
 		auto& lookup = get_tag_multiplier_lookup(skill_name);
@@ -211,8 +208,8 @@ private:
 		return it->second;
 	}
 	void set_skill_tag_multiplier(
-		InternedString skill_name,
-		InternedString tag_name,
+		SkillName skill_name,
+		TagName tag_name,
 		double multiplyer
 	)
 	{
