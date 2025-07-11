@@ -20,6 +20,9 @@ import <memory>;
 import <random>;
 import <unordered_map>;
 
+typedef std::unordered_map<InternedString, double> TagMultiplierLookup;
+typedef std::unordered_map<InternedString, TagMultiplierLookup> SkillTagMultipllierLookup;
+
 #define _3d6() (d6(_default_random_engine) + \
 	d6(_default_random_engine) + \
 	d6(_default_random_engine))
@@ -49,7 +52,8 @@ public:
 		_default_random_engine.seed(_rand_seed_counter++);
 
 		auto d6 = std::uniform_int_distribution(1, 6);
-		_skills.emplace(SKILL_MINING, static_cast<uint16_t>(_3d6()));
+		_skills[SKILL_MINING] = static_cast<uint16_t>(_3d6());
+		set_skill_tag_multiplier(SKILL_MINING, TAG_LARGE, 1.2);
 	}
 	Mob(
 		std::unique_ptr<MobBrain> brain,
@@ -62,7 +66,8 @@ public:
 		_default_random_engine.seed(_rand_seed_counter++);
 
 		auto d6 = std::uniform_int_distribution(1, 6);
-		_skills.emplace(SKILL_MINING, static_cast<uint16_t>(_3d6()));
+		_skills[SKILL_MINING] = static_cast<uint16_t>(_3d6());
+		set_skill_tag_multiplier(SKILL_MINING, TAG_LARGE, 1.2);
 	}
 	Mob(
 		TilePosition position,
@@ -74,7 +79,8 @@ public:
 		_default_random_engine.seed(_rand_seed_counter++);
 
 		auto d6 = std::uniform_int_distribution(1, 6);
-		_skills.emplace(SKILL_MINING, static_cast<uint16_t>(_3d6()));
+		_skills[SKILL_MINING] = static_cast<uint16_t>(_3d6());
+		set_skill_tag_multiplier(SKILL_MINING, TAG_LARGE, 1.2);
 	}
 	Mob(
 		TilePosition position,
@@ -82,14 +88,13 @@ public:
 		std::vector<InternedString> tags
 	) : MapObject(position, tags), _brain(std::move(brain))
 	{
-		_tags.insert(_tags.begin(), tags.begin(), tags.end());
-
 		_default_random_engine =
 			std::move(std::default_random_engine(_random_device()));
 		_default_random_engine.seed(_rand_seed_counter++);
 
 		auto d6 = std::uniform_int_distribution(1, 6);
-		_skills.emplace(SKILL_MINING, static_cast<uint16_t>(_3d6()));
+		_skills[SKILL_MINING] = static_cast<uint16_t>(_3d6());
+		set_skill_tag_multiplier(SKILL_MINING, TAG_LARGE, 1.2);
 	}
 	virtual ~Mob() = default;
 
@@ -131,16 +136,21 @@ public:
 
 	uint16_t get_raw_skill(InternedString skill_name)
 	{
-		auto it = _skills.find(skill_name);
-		if (it == _skills.end()) return 3;
-		return it->second;
+		return _skills.get_raw_skill(skill_name);
 	}
 
 	double get_skill_value(InternedString skill_name)
 	{
-		auto it = _skills.find(skill_name);
-		if (it == _skills.end()) return 3;
-		return static_cast<double>(it->second);
+		double value = _skills.get_skill_value(skill_name);
+		//auto& tag_multiplier_lookup = get_tag_multiplier_lookup(skill_name);
+		for (auto& tag : _tags)
+		{
+			value *= get_skill_tag_multiplier(skill_name, tag);
+			/*auto it_tag_mul = tag_multiplier_lookup.find(tag);
+			if (it_tag_mul == tag_multiplier_lookup.end()) continue;
+			value *= it_tag_mul->second;*/
+		}
+		return value;
 	}
 
 	void update(TileMap& map)
@@ -158,7 +168,6 @@ public:
 		if (map[get_position()] == TileGlyphIndex::Wall)
 		{
 			auto mining_skill = get_skill_value(SKILL_MINING);
-			if (has_tag(TAG_LARGE)) mining_skill *= 1.2;
 			double mining_speed = mining_skill / 10.0;
 			_next_action_time += 5.0 / mining_speed;
 		}
@@ -171,11 +180,46 @@ private:
 
 	std::unique_ptr<MobBrain> _brain;
 	double _next_action_time = 1.0;
-	std::unordered_map<InternedString, uint16_t> _skills;
+	SkillTagMultipllierLookup _skill_tag_multipliers;
+	Skills _skills;
 	std::default_random_engine _default_random_engine;
 	bool _is_dead = false;
 
 	friend class PlayerBrain;
+
+	TagMultiplierLookup& get_tag_multiplier_lookup(InternedString skill_name)
+	{
+		auto tag_mul_it = _skill_tag_multipliers.find(skill_name);
+		if (tag_mul_it == _skill_tag_multipliers.end())
+		{
+			_skill_tag_multipliers.emplace(skill_name, TagMultiplierLookup());
+		}
+
+		return _skill_tag_multipliers[skill_name];
+	}
+
+	double get_skill_tag_multiplier(
+		InternedString skill_name,
+		InternedString tag_name
+	)
+	{
+		if (!skill_name || !tag_name) return 1.0;
+		auto& lookup = get_tag_multiplier_lookup(skill_name);
+		auto it = lookup.find(tag_name);
+		if (it == lookup.end()) return 1.0;
+
+		return it->second;
+	}
+	void set_skill_tag_multiplier(
+		InternedString skill_name,
+		InternedString tag_name,
+		double multiplyer
+	)
+	{
+		if (!skill_name || !tag_name) return;
+
+		get_tag_multiplier_lookup(skill_name)[tag_name] = multiplyer;
+	}
 };
 
 std::random_device Mob::_random_device;
