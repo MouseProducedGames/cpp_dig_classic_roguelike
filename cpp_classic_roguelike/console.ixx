@@ -17,6 +17,7 @@ import sizei;
 import tile_position;
 
 // std imports
+import <cctype>;
 import <chrono>;
 import <memory>;
 import <optional>;
@@ -122,8 +123,11 @@ public:
 		for (auto& mob : mobs)
 		{
 			if (!move_cursor(mob->get_position())) continue;
-			if (mob->has_tag(TAG_PLAYER)) write('@');
-			else write('W');
+			char ch;
+			if (mob->has_tag(TAG_PLAYER)) ch = '@';
+			else ch = 'w';
+			if (mob->has_tag(TAG_LARGE)) ch = std::toupper(ch);
+			write(ch);
 		}
 	}
 	virtual void write(std::string s)

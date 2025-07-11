@@ -21,14 +21,14 @@ export class MapObject
 public:
 	// de/constructors
 	MapObject() {}
-	MapObject(std::initializer_list<InternedString> tags)
+	MapObject(std::vector<InternedString> tags)
 	{
 		_tags.insert(_tags.begin(), tags.begin(), tags.end());
 	}
 	MapObject(TilePosition position) : _position(position) {}
 	MapObject(
 		TilePosition position,
-		std::initializer_list<InternedString> tags
+		std::vector<InternedString> tags
 	) : _position(position)
 	{
 		_tags.insert(_tags.begin(), tags.begin(), tags.end());

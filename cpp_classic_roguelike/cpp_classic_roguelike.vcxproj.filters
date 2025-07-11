@@ -87,6 +87,9 @@
     <ClCompile Include="tags.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="skills.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="docs\plan.md" />
@@ -115,6 +118,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="tags.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="skills.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

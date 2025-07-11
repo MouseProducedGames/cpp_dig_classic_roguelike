@@ -53,6 +53,7 @@
     <ClCompile Include="brains.ixx" />
     <ClCompile Include="recti.ixx" />
     <ClCompile Include="sizei.ixx" />
+    <ClCompile Include="skills.cpp" />
     <ClCompile Include="tags.cpp" />
     <ClCompile Include="tile_displacement.ixx" />
     <ClCompile Include="tile_map.ixx" />
@@ -93,6 +94,7 @@
     <ClInclude Include="interned_string.hpp" />
     <ClInclude Include="make_platform_console.hpp" />
     <ClInclude Include="platform.hpp" />
+    <ClInclude Include="skills.hpp" />
     <ClInclude Include="tags.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

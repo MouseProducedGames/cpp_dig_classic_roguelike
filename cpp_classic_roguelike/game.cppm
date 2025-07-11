@@ -79,15 +79,19 @@ void initial_mobs_spawn(
 	std::uniform_int_distribution<int>& rand_y_pos
 )
 {
+	auto chance_large = std::uniform_int_distribution<int>(1, 100);
 	for (int i = 1; i++ < 20;)
 	{
-		mobs.push_back(std::make_shared<Mob>(
+		std::vector<InternedString> tags;
+		if (chance_large(random_device_impl) <= 5) tags.push_back(TAG_LARGE);
+		mobs.push_back(std::shared_ptr<Mob>(new Mob(
 			TilePosition(
 				rand_x_pos(random_device_impl),
 				rand_y_pos(random_device_impl)
 			),
-			std::unique_ptr<MobBrain>(new RandomMoveBrain())
-		));
+			std::unique_ptr<MobBrain>(new RandomMoveBrain()),
+			tags
+		)));
 	}
 }
 

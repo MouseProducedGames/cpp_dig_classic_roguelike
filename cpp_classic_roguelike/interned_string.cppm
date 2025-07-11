@@ -22,6 +22,24 @@ InternedString::operator bool() const noexcept
 	return _char_string != nullptr;
 }
 
+bool InternedString::operator==(const InternedString& rhs) const noexcept
+{
+	return _char_string == rhs._char_string;
+}
+bool InternedString::operator!=(const InternedString& rhs) const noexcept
+{
+	return !(*this == rhs);
+}
+bool InternedString::operator<(const InternedString& rhs) const noexcept
+{
+	return this->_char_string < rhs._char_string;
+}
+
+//const char* InternedString::operator*() const noexcept
+//{
+//	return _char_string;
+//}
+
 InternedString InternedString::find(const char* s)
 {
 	if (s == nullptr || !strlen(s)) return {};

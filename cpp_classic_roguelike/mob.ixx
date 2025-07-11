@@ -1,4 +1,6 @@
 #include "interned_string.hpp"
+#include "skills.hpp"
+#include "tags.hpp"
 
 // Include files (currently) must go above the module export.
 #pragma warning( push )
@@ -16,6 +18,11 @@ import tile_position;
 import <chrono>;
 import <memory>;
 import <random>;
+import <unordered_map>;
+
+#define _3d6() (d6(_default_random_engine) + \
+	d6(_default_random_engine) + \
+	d6(_default_random_engine))
 
 class Mob;
 
@@ -42,14 +49,11 @@ public:
 		_default_random_engine.seed(_rand_seed_counter++);
 
 		auto d6 = std::uniform_int_distribution(1, 6);
-		_mining_skill =
-			d6(_default_random_engine) +
-			d6(_default_random_engine) +
-			d6(_default_random_engine);
+		_skills.emplace(SKILL_MINING, static_cast<uint16_t>(_3d6()));
 	}
 	Mob(
 		std::unique_ptr<MobBrain> brain,
-		std::initializer_list<InternedString> tags
+		std::vector<InternedString> tags
 	)
 		: MapObject(tags), _brain(std::move(brain))
 	{
@@ -58,10 +62,7 @@ public:
 		_default_random_engine.seed(_rand_seed_counter++);
 
 		auto d6 = std::uniform_int_distribution(1, 6);
-		_mining_skill =
-			d6(_default_random_engine) +
-			d6(_default_random_engine) +
-			d6(_default_random_engine);
+		_skills.emplace(SKILL_MINING, static_cast<uint16_t>(_3d6()));
 	}
 	Mob(
 		TilePosition position,
@@ -73,15 +74,12 @@ public:
 		_default_random_engine.seed(_rand_seed_counter++);
 
 		auto d6 = std::uniform_int_distribution(1, 6);
-		_mining_skill =
-			d6(_default_random_engine) +
-			d6(_default_random_engine) +
-			d6(_default_random_engine);
+		_skills.emplace(SKILL_MINING, static_cast<uint16_t>(_3d6()));
 	}
 	Mob(
 		TilePosition position,
 		std::unique_ptr<MobBrain> brain,
-		std::initializer_list<InternedString> tags
+		std::vector<InternedString> tags
 	) : MapObject(position, tags), _brain(std::move(brain))
 	{
 		_tags.insert(_tags.begin(), tags.begin(), tags.end());
@@ -91,10 +89,7 @@ public:
 		_default_random_engine.seed(_rand_seed_counter++);
 
 		auto d6 = std::uniform_int_distribution(1, 6);
-		_mining_skill =
-			d6(_default_random_engine) +
-			d6(_default_random_engine) +
-			d6(_default_random_engine);
+		_skills.emplace(SKILL_MINING, static_cast<uint16_t>(_3d6()));
 	}
 	virtual ~Mob() = default;
 
@@ -104,6 +99,8 @@ public:
 		_next_action_time = new_value;
 		return _next_action_time;
 	}
+
+	//uint16_t get_skill
 
 	bool is_alive() const noexcept { return !is_dead(); }
 	bool is_dead() const noexcept { return _is_dead; }
@@ -132,6 +129,20 @@ public:
 		return _random_device;
 	}
 
+	uint16_t get_raw_skill(InternedString skill_name)
+	{
+		auto it = _skills.find(skill_name);
+		if (it == _skills.end()) return 3;
+		return it->second;
+	}
+
+	double get_skill_value(InternedString skill_name)
+	{
+		auto it = _skills.find(skill_name);
+		if (it == _skills.end()) return 3;
+		return static_cast<double>(it->second);
+	}
+
 	void update(TileMap& map)
 	{
 		//_next_action_time -= 1.0;
@@ -146,7 +157,9 @@ public:
 
 		if (map[get_position()] == TileGlyphIndex::Wall)
 		{
-			double mining_speed = (static_cast<double>(_mining_skill) / 10.0);
+			auto mining_skill = get_skill_value(SKILL_MINING);
+			if (has_tag(TAG_LARGE)) mining_skill *= 1.2;
+			double mining_speed = mining_skill / 10.0;
 			_next_action_time += 5.0 / mining_speed;
 		}
 		else _next_action_time += 1.0;
@@ -158,8 +171,8 @@ private:
 
 	std::unique_ptr<MobBrain> _brain;
 	double _next_action_time = 1.0;
+	std::unordered_map<InternedString, uint16_t> _skills;
 	std::default_random_engine _default_random_engine;
-	uint16_t _mining_skill = 0;
 	bool _is_dead = false;
 
 	friend class PlayerBrain;

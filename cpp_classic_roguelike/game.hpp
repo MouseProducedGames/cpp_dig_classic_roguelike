@@ -1,3 +1,5 @@
+#pragma once
+
 // local imports
 import mob;
 import tile_map;

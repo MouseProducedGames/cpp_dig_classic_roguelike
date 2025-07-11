@@ -1,3 +1,5 @@
+#pragma once
+
 // Reference:
 //   <https://capscollective.com/blog/siege-string-tokens/>
 //   <https://en.cppreference.com/w/cpp/utility/hash.html>
@@ -18,6 +20,12 @@ public:
 	explicit InternedString(const char* s);
 
 	operator bool() const noexcept;
+	
+	bool operator==(const InternedString& rhs) const noexcept;
+	bool operator!=(const InternedString& rhs) const noexcept;
+	bool operator<(const InternedString& rhs) const noexcept;
+
+	//const char* operator*() const noexcept;
 
 	static InternedString find(const char* s);
 
@@ -43,4 +51,4 @@ template<> struct std::hash<InternedString>
 	extern InternedString type##_##name
 
 #define DEFINE_INTERNED_STRING(type, name) \
-	InternedString type##_##name(#name)
+	InternedString type##_##name = InternedString::find_or_register(#name)
