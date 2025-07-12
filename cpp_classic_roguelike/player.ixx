@@ -7,6 +7,7 @@ export module player;
 #pragma warning( pop )
 
 // local imports
+import action;
 import console;
 import mob;
 import tile_displacement;
@@ -14,39 +15,33 @@ import virtual_scan_code;
 
 export class PlayerBrain : public MobBrain
 {
-	void update(Mob& mob, Level& level)
+	Action update(Mob& mob, Level& level)
 	{
 		//mob._mining_skill = 3;
 
 		auto key = Console::instance().wait_key();
-		//if (key_maybe.has_value())
+		typedef TileDisplacement TD;
+		switch (key.virtual_scan_code)
 		{
-			//std::print("{}", (unsigned int)key_maybe.value().virtual_scan_code);
-			TileDisplacement move;
-			//auto key = key_maybe.value();
-			switch (key.virtual_scan_code)
-			{
-			case VirtualScanCode::Q:
-			case VirtualScanCode::Numpad7: move.x = -1; move.y = -1; break;
-			case VirtualScanCode::W:
-			case VirtualScanCode::Numpad8: move.y = -1; break;
-			case VirtualScanCode::E:
-			case VirtualScanCode::Numpad9: move.x = 1; move.y = -1; break;
-			case VirtualScanCode::A:
-			case VirtualScanCode::Numpad4: move.x = -1; break;
-			case VirtualScanCode::S:
-			case VirtualScanCode::Numpad5: break;
-			case VirtualScanCode::D:
-			case VirtualScanCode::Numpad6: move.x = 1; break;
-			case VirtualScanCode::Z:
-			case VirtualScanCode::Numpad1: move.x = -1; move.y = 1; break;
-			case VirtualScanCode::X:
-			case VirtualScanCode::Numpad2: move.y = 1; break;
-			case VirtualScanCode::C:
-			case VirtualScanCode::Numpad3: move.x = 1; move.y = 1; break;
-			}
-
-			mob.move(move);
+		case VirtualScanCode::Z:
+		case VirtualScanCode::Numpad1: return TD(-1, 1);
+		case VirtualScanCode::X:
+		case VirtualScanCode::Numpad2: return TD(0, 1);
+		case VirtualScanCode::C:
+		case VirtualScanCode::Numpad3: return TD(1, 1);
+		case VirtualScanCode::A:
+		case VirtualScanCode::Numpad4: return TD(-1, 0);
+		case VirtualScanCode::S:
+		case VirtualScanCode::Numpad5: return std::nullopt;
+		case VirtualScanCode::D:
+		case VirtualScanCode::Numpad6: return TD(1, 0);
+		case VirtualScanCode::Q:
+		case VirtualScanCode::Numpad7: return TD(-1, -1);
+		case VirtualScanCode::W:
+		case VirtualScanCode::Numpad8: return TD(0, -1);
+		case VirtualScanCode::E:
+		case VirtualScanCode::Numpad9: return TD(1, -1);
+		default: return std::nullopt;
 		}
 	}
 };

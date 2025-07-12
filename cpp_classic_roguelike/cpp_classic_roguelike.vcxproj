@@ -35,6 +35,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="action.ixx" />
     <ClCompile Include="base_map.ixx" />
     <ClCompile Include="console.ixx" />
     <ClCompile Include="constants.ixx" />
@@ -46,6 +47,7 @@
     <ClCompile Include="main.cppm" />
     <ClCompile Include="make_platform_console.cpp" />
     <ClCompile Include="map_object.ixx" />
+    <ClCompile Include="match.ixx" />
     <ClCompile Include="platforms\SDL3\sdl3_console.ixx" />
     <ClCompile Include="platforms\win32\win_console.ixx" />
     <ClCompile Include="mob.ixx" />

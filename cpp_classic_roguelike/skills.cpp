@@ -2,10 +2,6 @@
 
 #define DEFINE_SKILL(name) DEFINE_INTERNED_STRING(SKILL, name)
 
-DEFINE_SKILL(MINING);
-
-
-
 uint16_t& Skills::operator[](SkillName index)
 {
 	return _values[index];
@@ -30,3 +26,8 @@ double Skills::get_skill_value(SkillName skill_name)
 //{
 //	_values[skill_name] = raw_value;
 //}
+
+
+
+DEFINE_SKILL(FIGHTING);
+DEFINE_SKILL(MINING);

@@ -7,6 +7,7 @@ export module brains;
 #pragma warning( pop )
 
 // local imports
+import action;
 import mob;
 import tile_displacement;
 
@@ -22,24 +23,23 @@ public:
 	}
 	~RandomMoveBrain() = default;
 
-	void update(Mob& mob, Level& level)
+	Action update(Mob& mob, Level& level)
 	{
 		int choice_roll = _choice(mob.get_default_random_engine());
-		TileDisplacement move;
+		typedef TileDisplacement TD;
 		switch (choice_roll)
 		{
-		case 1: move.x = -1; move.y = -1; break;
-		case 2: move.y = -1; break;
-		case 3: move.x = 1; move.y = -1; break;
-		case 4: move.x = -1; break;
-		case 5: break;
-		case 6: move.x = 1; break;
-		case 7: move.x = -1; move.y = 1; break;
-		case 8: move.y = 1; break;
-		case 9: move.x = 1; move.y = 1; break;
+		case 1: return TD(-1, -1);
+		case 2: return TD(0, -1);
+		case 3: return TD(1, -1);
+		case 4: return TD(-1, 0);
+		case 5: return std::nullopt;
+		case 6: return TD(1, 0);
+		case 7: return TD(-1, +1);
+		case 8: return TD(0, +1);
+		case 9: return TD(1, +1);
+		default: return std::nullopt;
 		}
-
-		mob.move(move);
 	}
 
 private:

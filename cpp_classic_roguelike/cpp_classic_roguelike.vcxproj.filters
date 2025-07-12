@@ -90,6 +90,12 @@
     <ClCompile Include="level.cppm">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="action.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="match.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="docs\plan.md" />

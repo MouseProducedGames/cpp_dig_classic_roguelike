@@ -11,7 +11,9 @@ import player;
 
 // std imports
 import <chrono>;
+import <limits>;
 import <memory>;
+import <print>;
 import <ranges>;
 import <thread>;
 import <vector>;
@@ -26,14 +28,22 @@ struct {
 
 void advance_time(std::vector<std::shared_ptr<Mob>>& mobs)
 {
+	std::println("advance_time:");
 	// Zero-centering initiative time to avoid drift.
 	double smallest_time = std::numeric_limits<double>::max();
 	for (auto& mob : mobs)
 	{
+		if (mob->is_dead()) continue;
+
 		auto cur_time = mob->get_next_action_time();
 		if (cur_time < smallest_time)
 		{
 			smallest_time = cur_time;
+		}
+
+		if (mob->has_tag(TAG_PLAYER))
+		{
+			std::println("Player_time: {}", mob->get_next_action_time());
 		}
 	}
 
@@ -48,13 +58,16 @@ void advance_time(std::vector<std::shared_ptr<Mob>>& mobs)
 		auto cur_time = mob->get_next_action_time();
 		mob->set_next_action_time(cur_time - smallest_time);
 	}
+}
 
+void sort_by_time(std::vector<std::shared_ptr<Mob>>&mobs)
+{
 	std::sort(mobs.begin(), mobs.end(), SortByNextActionTime);
 }
 
 void clean_mobs(std::vector<std::shared_ptr<Mob>>& mobs)
 {
-	static std::vector<size_t> removes;
+	/*static std::vector<size_t> removes;
 	for (auto [index, mob] : std::views::enumerate(mobs))
 	{
 		if (mob->is_dead())
@@ -70,7 +83,7 @@ void clean_mobs(std::vector<std::shared_ptr<Mob>>& mobs)
 		mobs[index] = last;
 		mobs.pop_back();
 	}
-	removes.clear();
+	removes.clear();*/
 }
 
 void initial_mobs_spawn(
@@ -107,26 +120,42 @@ std::shared_ptr<Mob> initial_player_spawn(Level& level)
 	return player;
 }
 
-void update_mobs(Level& level)
+void pre_update_mobs(Level& level)
 {
+	std::println("Pre-update loop");
 	for (auto mob : level.iter_mobs())
 	{
+		if (mob->is_dead()) continue;
+
+		if (mob->has_tag(TAG_PLAYER))
+			std::println("Player_time: {}", mob->get_next_action_time());
+		else std::println("Mob_time: {}", mob->get_next_action_time());
+
 		if (mob->get_next_action_time() > 0.0001) break;
 
-		level.get_tile_map().set_tile(mob->get_position(), TileGlyphIndex::Floor);
+		mob->pre_update(level);
 
 		if (mob->is_dead()) continue;
+
+		level.get_tile_map().set_tile(mob->get_position(), TileGlyphIndex::Floor);
+	}
+}
+
+void update_mobs(Level& level)
+{
+	std::println("Update loop");
+	for (auto mob : level.iter_mobs())
+	{
+		if (mob->is_dead()) continue;
+
+		if (mob->has_tag(TAG_PLAYER))
+			std::println("Player_time: {}", mob->get_next_action_time());
+		else std::println("Mob_time: {}", mob->get_next_action_time());
+
+		if (mob->get_next_action_time() > 0.0001) break;
+
+		//level.get_tile_map().set_tile(mob->get_position(), TileGlyphIndex::Floor);
 
 		mob->update(level);
-
-		if (mob->is_dead()) continue;
-
-		for (auto other_mob : level.iter_mobs_at(mob->get_position()))
-		{
-			if (mob == other_mob) continue;
-
-			
-			other_mob->kill();
-		}
 	}
 }

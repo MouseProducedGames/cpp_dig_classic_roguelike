@@ -122,6 +122,8 @@ public:
 	{
 		for (auto& mob : mobs)
 		{
+			if (mob->is_dead()) continue;
+
 			if (!move_cursor(mob->get_position())) continue;
 			char ch;
 			if (mob->has_tag(TAG_PLAYER)) ch = '@';

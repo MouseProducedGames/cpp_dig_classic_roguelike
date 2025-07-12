@@ -10,13 +10,16 @@ export module mob;
 #pragma warning( pop )
 
 // local imports
+import action;
 import glyph;
 import map_object;
+import match;
 import tile_map;
 import tile_position;
 
 // std imports
 import <chrono>;
+import <limits>;
 import <memory>;
 import <random>;
 import <unordered_map>;
@@ -38,7 +41,7 @@ public:
 
 	virtual void kill(Mob& mob) {}
 
-	virtual void update(Mob& mob, Level& level) = 0;
+	virtual Action update(Mob& mob, Level& level) = 0;
 };
 
 export class Mob : public MapObject
@@ -55,6 +58,8 @@ public:
 		auto d6 = std::uniform_int_distribution(1, 6);
 		_skills[SKILL_MINING] = static_cast<uint16_t>(_3d6());
 		set_skill_tag_multiplier(SKILL_MINING, TAG_LARGE, 1.2);
+		_skills[SKILL_FIGHTING] = static_cast<uint16_t>(_3d6());
+		set_skill_tag_multiplier(SKILL_FIGHTING, TAG_LARGE, 1.4);
 	}
 	Mob(
 		std::unique_ptr<MobBrain> brain,
@@ -69,6 +74,8 @@ public:
 		auto d6 = std::uniform_int_distribution(1, 6);
 		_skills[SKILL_MINING] = static_cast<uint16_t>(_3d6());
 		set_skill_tag_multiplier(SKILL_MINING, TAG_LARGE, 1.2);
+		_skills[SKILL_FIGHTING] = static_cast<uint16_t>(_3d6());
+		set_skill_tag_multiplier(SKILL_FIGHTING, TAG_LARGE, 1.4);
 	}
 	Mob(
 		TilePosition position,
@@ -82,6 +89,8 @@ public:
 		auto d6 = std::uniform_int_distribution(1, 6);
 		_skills[SKILL_MINING] = static_cast<uint16_t>(_3d6());
 		set_skill_tag_multiplier(SKILL_MINING, TAG_LARGE, 1.2);
+		_skills[SKILL_FIGHTING] = static_cast<uint16_t>(_3d6());
+		set_skill_tag_multiplier(SKILL_FIGHTING, TAG_LARGE, 1.4);
 	}
 	Mob(
 		TilePosition position,
@@ -96,10 +105,16 @@ public:
 		auto d6 = std::uniform_int_distribution(1, 6);
 		_skills[SKILL_MINING] = static_cast<uint16_t>(_3d6());
 		set_skill_tag_multiplier(SKILL_MINING, TAG_LARGE, 1.2);
+		_skills[SKILL_FIGHTING] = static_cast<uint16_t>(_3d6());
+		set_skill_tag_multiplier(SKILL_FIGHTING, TAG_LARGE, 1.4);
 	}
 	virtual ~Mob() = default;
 
-	double get_next_action_time() const noexcept { return _next_action_time; }
+	double get_next_action_time() const noexcept
+	{
+		if (is_alive()) return _next_action_time;
+		else return std::numeric_limits<double>::max();
+	}
 	double set_next_action_time(double new_value) noexcept
 	{
 		_next_action_time = new_value;
@@ -154,25 +169,73 @@ public:
 		return value;
 	}
 
+	void pre_update(Level& level)
+	{
+		if (is_dead()) return;
+
+		match(_next_action,
+			[&](TileDisplacement move)
+			{
+				TilePosition next_pos = get_position() + move;
+				if (level.get_tile_map().size() != next_pos)
+				{
+					kill();
+					return;
+				}
+
+
+				bool collided = false;
+				for (auto other_mob : level.iter_mobs_at(next_pos))
+				{
+					// should not match.
+					if (this == &*other_mob || other_mob->is_dead()) continue;
+
+					collided = true;
+
+					double attack_skill = get_skill_value(SKILL_FIGHTING);
+					double defence_skill = other_mob->get_skill_value(SKILL_FIGHTING);
+					double chance = attack_skill / (attack_skill + defence_skill);
+					double roll = std::uniform_real_distribution<double>()(
+						_default_random_engine
+						);
+
+					if (roll <= chance)
+					{
+						other_mob->kill();
+					}
+				}
+
+				if (!collided) set_position(next_pos);
+			},
+			[](std::nullopt_t) {}
+		);
+
+		/*_next_action_time = 0.0;
+		_next_action = std::nullopt;*/
+	}
+
 	void update(Level& level)
 	{
-		//_next_action_time -= 1.0;
+		if (is_dead()) return;
 
-		_brain->update(*this, level);
+		_next_action = _brain->update(*this, level);
+		_next_action_time = 1.0;
 
-		if (level.get_tile_map().size() != get_position())
-		{
-			kill();
-			return;
-		}
+		match(_next_action,
+			[&](TileDisplacement move)
+			{
+				TilePosition next_pos = get_position() + move;
+				if (level.get_tile_map().size() != next_pos) return;
 
-		if (level.get_tile_map()[get_position()] == TileGlyphIndex::Wall)
-		{
-			auto mining_skill = get_skill_value(SKILL_MINING);
-			double mining_speed = mining_skill / 10.0;
-			_next_action_time += 5.0 / mining_speed;
-		}
-		else _next_action_time += 1.0;
+				if (level.get_tile_map()[next_pos] == TileGlyphIndex::Wall)
+				{
+					double mining_skill = get_skill_value(SKILL_MINING);
+					double mining_speed = mining_skill / 10.0;
+					_next_action_time = 5.0 / mining_speed;
+				}
+			},
+			[&](std::nullopt_t) {}
+		);
 	}
 
 private:
@@ -180,9 +243,10 @@ private:
 	static std::random_device _random_device;
 
 	std::unique_ptr<MobBrain> _brain;
-	double _next_action_time = 1.0;
+	double _next_action_time = 0.0;
 	SkillTagMultipllierLookup _skill_tag_multipliers;
 	Skills _skills;
+	Action _next_action = std::nullopt;
 	std::default_random_engine _default_random_engine;
 	bool _is_dead = false;
 

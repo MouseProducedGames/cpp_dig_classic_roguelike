@@ -56,7 +56,7 @@ TileMap const& Level::get_tile_map() const noexcept
 
 std::generator<std::shared_ptr<Mob>> Level::iter_mobs() const noexcept
 {
-	for (auto mob : _mobs)
+	for (std::shared_ptr<Mob> mob : _mobs)
 	{
 		co_yield mob;
 	}

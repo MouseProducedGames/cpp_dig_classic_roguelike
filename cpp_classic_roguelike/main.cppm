@@ -36,15 +36,21 @@ int main(void)
 	
 	while (player->is_alive())
 	{
+		pre_update_mobs(level);
+		//clean_mobs(level.get_mobs());
+		sort_by_time(level.get_mobs());
+		advance_time(level.get_mobs());
+
 		Console::instance().clear();
 		Console::instance().write(level.get_tile_map());
 		Console::instance().write(level.get_mobs());
 
 		Console::instance().present();
 
-		advance_time(level.get_mobs());
 		update_mobs(level);
-		clean_mobs(level.get_mobs());
+		//clean_mobs(level.get_mobs());
+		sort_by_time(level.get_mobs());
+		advance_time(level.get_mobs());
 	}
 
 	return 0;

@@ -12,8 +12,6 @@ typedef InternedString<SKILL> SkillName;
 
 #define DECLARE_SKILL(name) DECLARE_INTERNED_STRING(SKILL, name)
 
-DECLARE_SKILL(MINING);
-
 class Skills {
 public:
 	uint16_t& operator[](SkillName index);
@@ -26,3 +24,8 @@ public:
 private:
 	std::unordered_map<SkillName, std::uint16_t> _values;
 };
+
+
+
+DECLARE_SKILL(FIGHTING);
+DECLARE_SKILL(MINING);

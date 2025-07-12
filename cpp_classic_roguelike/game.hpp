@@ -11,6 +11,7 @@ import <random>;
 import <vector>;
 
 void advance_time(std::vector<std::shared_ptr<Mob>>& mobs);
+void sort_by_time(std::vector<std::shared_ptr<Mob>>& mobs);
 
 void clean_mobs(std::vector<std::shared_ptr<Mob>>& mobs);
 void initial_mobs_spawn(
@@ -20,4 +21,5 @@ void initial_mobs_spawn(
 	std::uniform_int_distribution<int>& rand_y_pos
 );
 std::shared_ptr<Mob> initial_player_spawn(Level& level);
+void pre_update_mobs(Level& level);
 void update_mobs(Level& level);
