@@ -1,12 +1,13 @@
 // this include
 #include "game.hpp"
-#include "tags.hpp"
 
 // local imports
 import brains;
 import constants;
+#include "level.hpp"
 import mob;
 import player;
+#include "tags.hpp"
 
 // std imports
 import <chrono>;
@@ -73,7 +74,7 @@ void clean_mobs(std::vector<std::shared_ptr<Mob>>& mobs)
 }
 
 void initial_mobs_spawn(
-	std::vector<std::shared_ptr<Mob>>& mobs,
+	Level& level,
 	std::default_random_engine& random_device_impl,
 	std::uniform_int_distribution<int>& rand_x_pos,
 	std::uniform_int_distribution<int>& rand_y_pos
@@ -84,50 +85,48 @@ void initial_mobs_spawn(
 	{
 		std::vector<TagName> tags;
 		if (chance_large(random_device_impl) <= 5) tags.push_back(TAG_LARGE);
-		mobs.push_back(std::shared_ptr<Mob>(new Mob(
+		level.new_mob(
 			TilePosition(
 				rand_x_pos(random_device_impl),
 				rand_y_pos(random_device_impl)
 			),
 			std::unique_ptr<MobBrain>(new RandomMoveBrain()),
 			tags
-		)));
+		);
 	}
 }
 
-std::shared_ptr<Mob> initial_player_spawn(std::vector<std::shared_ptr<Mob>>& mobs)
+std::shared_ptr<Mob> initial_player_spawn(Level& level)
 {
 	std::shared_ptr<Mob> player = std::shared_ptr<Mob>(new Mob(
 		TilePosition(0, MAP_HEIGHT / 2),
 		std::unique_ptr<MobBrain>(new PlayerBrain()),
 		{ TAG_PLAYER }
 	));
-	mobs.push_back(player);
+	level.add_mob(player);
 	return player;
 }
 
-void update_mobs(std::vector<std::shared_ptr<Mob>>& mobs, TileMap& map)
+void update_mobs(Level& level)
 {
-	for (auto& mob : mobs)
+	for (auto mob : level.iter_mobs())
 	{
 		if (mob->get_next_action_time() > 0.0001) break;
 
-		map.set_tile(mob->get_position(), TileGlyphIndex::Floor);
+		level.get_tile_map().set_tile(mob->get_position(), TileGlyphIndex::Floor);
 
 		if (mob->is_dead()) continue;
 
-		mob->update(map);
+		mob->update(level);
 
 		if (mob->is_dead()) continue;
 
-		for (auto& other_mob : mobs)
+		for (auto other_mob : level.iter_mobs_at(mob->get_position()))
 		{
 			if (mob == other_mob) continue;
 
-			if (mob->get_position() == other_mob->get_position())
-			{
-				other_mob->kill();
-			}
+			
+			other_mob->kill();
 		}
 	}
 }

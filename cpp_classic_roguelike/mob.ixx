@@ -1,4 +1,5 @@
 #include "interned_string.hpp"
+#include "level.hpp"
 #include "skills.hpp"
 #include "tags.hpp"
 
@@ -37,7 +38,7 @@ public:
 
 	virtual void kill(Mob& mob) {}
 
-	virtual void update(Mob& mob, TileMap& map) = 0;
+	virtual void update(Mob& mob, Level& level) = 0;
 };
 
 export class Mob : public MapObject
@@ -153,19 +154,19 @@ public:
 		return value;
 	}
 
-	void update(TileMap& map)
+	void update(Level& level)
 	{
 		//_next_action_time -= 1.0;
 
-		_brain->update(*this, map);
+		_brain->update(*this, level);
 
-		if (map.size() != get_position())
+		if (level.get_tile_map().size() != get_position())
 		{
 			kill();
 			return;
 		}
 
-		if (map[get_position()] == TileGlyphIndex::Wall)
+		if (level.get_tile_map()[get_position()] == TileGlyphIndex::Wall)
 		{
 			auto mining_skill = get_skill_value(SKILL_MINING);
 			double mining_speed = mining_skill / 10.0;

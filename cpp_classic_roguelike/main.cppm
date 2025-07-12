@@ -3,6 +3,7 @@ import console;
 import constants;
 #include "game.hpp"
 #include "init_menu.hpp"
+#include "level.hpp"
 import mob;
 import player;
 import tile_map;
@@ -26,25 +27,24 @@ int main(void)
 	std::default_random_engine random_device_impl(random_device());
 	auto rand_x_pos = std::uniform_int_distribution<int>(0, (MAP_WIDTH - 1));
 	auto rand_y_pos = std::uniform_int_distribution<int>(0, (MAP_HEIGHT - 1));
-	std::vector<std::shared_ptr<Mob>> mobs;
 
-	TileMap test(MAP_WIDTH, MAP_HEIGHT);
+	Level level;
 
-	std::shared_ptr<Mob> player = initial_player_spawn(mobs);
+	auto player = initial_player_spawn(level);
 
-	initial_mobs_spawn(mobs, random_device_impl, rand_x_pos, rand_y_pos);
+	initial_mobs_spawn(level, random_device_impl, rand_x_pos, rand_y_pos);
 	
 	while (player->is_alive())
 	{
 		Console::instance().clear();
-		Console::instance().write(test);
-		Console::instance().write(mobs);
+		Console::instance().write(level.get_tile_map());
+		Console::instance().write(level.get_mobs());
 
 		Console::instance().present();
 
-		advance_time(mobs);
-		update_mobs(mobs, test);
-		clean_mobs(mobs);
+		advance_time(level.get_mobs());
+		update_mobs(level);
+		clean_mobs(level.get_mobs());
 	}
 
 	return 0;

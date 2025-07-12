@@ -1,4 +1,10 @@
+#include "level.hpp"
+
+// Include files (currently) must go above the module export.
+#pragma warning( push )
+#pragma warning( disable : 5201 )
 export module player;
+#pragma warning( pop )
 
 // local imports
 import console;
@@ -8,7 +14,7 @@ import virtual_scan_code;
 
 export class PlayerBrain : public MobBrain
 {
-	void update(Mob& mob, TileMap& map)
+	void update(Mob& mob, Level& level)
 	{
 		//mob._mining_skill = 3;
 

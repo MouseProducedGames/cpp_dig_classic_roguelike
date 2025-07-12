@@ -42,6 +42,7 @@
     <ClCompile Include="glyph.ixx" />
     <ClCompile Include="init_menu.cppm" />
     <ClCompile Include="key_event.ixx" />
+    <ClCompile Include="level.cppm" />
     <ClCompile Include="main.cppm" />
     <ClCompile Include="make_platform_console.cpp" />
     <ClCompile Include="map_object.ixx" />
@@ -91,6 +92,7 @@
     <ClInclude Include="game.hpp" />
     <ClInclude Include="init_menu.hpp" />
     <ClInclude Include="interned_string.hpp" />
+    <ClInclude Include="level.hpp" />
     <ClInclude Include="make_platform_console.hpp" />
     <ClInclude Include="platform.hpp" />
     <ClInclude Include="skills.hpp" />

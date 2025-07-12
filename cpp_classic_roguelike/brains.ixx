@@ -1,4 +1,10 @@
+#include "level.hpp"
+
+// Include files (currently) must go above the module export.
+#pragma warning( push )
+#pragma warning( disable : 5201 )
 export module brains;
+#pragma warning( pop )
 
 // local imports
 import mob;
@@ -16,7 +22,7 @@ public:
 	}
 	~RandomMoveBrain() = default;
 
-	void update(Mob& mob, TileMap& map)
+	void update(Mob& mob, Level& level)
 	{
 		int choice_roll = _choice(mob.get_default_random_engine());
 		TileDisplacement move;
